@@ -1,0 +1,11 @@
+// KAIROVersion 2.20
+//Ovl(or0)
+WHILE TRUE DO
+   Lin(cp0)
+   Lin(cp1)
+   Lin(cp2)
+   Lin(cp3)
+   Lin(cp2)
+   Lin(cp1)
+   //Lin(cp0)
+END_WHILE

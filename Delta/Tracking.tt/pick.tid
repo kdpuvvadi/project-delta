@@ -1,0 +1,12 @@
+dynPick : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 8500, acc := 50000,
+dec := 50000, jerk := 3e+06, velOri := 1000, accOri := 3000, decOri := 2000, jerkOri := 3e+06)
+or200 : OVLREL := (ovl := 200)
+Robo_1_Pick : DINT := 0
+T1 : TOOL := (x := 37.5, y := -4, z := 15, guard := (vector := ((active := TRUE, type := BEGINTRANSFORMATION), 
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+T2 : TOOL := (x := -40, y := -1, z := 15, guard := (vector := ((active := TRUE, type := BEGINTRANSFORMATION), 
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+M : DINT := 0
+N : DINT := 0
+T1_Vacuum_sensor : BOOLSIGIN := (signal := MAPX("di_DM9"))
+T2_Vacuum_sensor : BOOLSIGIN := (signal := MAPX("di_DM10"))

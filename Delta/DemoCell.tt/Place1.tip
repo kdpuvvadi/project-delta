@@ -1,0 +1,39 @@
+// KAIROVersion 2.20
+RefSys(World)
+Tool(DefaultTool)
+IF PlaceConv.Wait(objPlace, iAttribute, , 100) <> WAITSUCCESS THEN
+   RefSys(World)
+   Tool(DefaultTool)
+   Lin(cpWaitPlace)
+   PlaceConv.Wait(objPlace)
+END_IF
+RefSys(objPlace.refSys)
+Tool(DefaultTool)
+IF iPlaceX < 3 THEN
+   CALL PlaceXData
+   IF iPlaceY < 3 THEN
+      CALL PlaceYData
+      Lin(cpturn0PlaceUp)
+      //OnParameter(50) DO do_PozhenkongR1.Pulse(50)
+      //OnParameter(10) DO do_Zhenkong_1.Set(FALSE)
+      //OnParameter(10) DO do_Zhenkong_2.Set(FALSE)
+      //OnParameter(10) DO do_Zhenkong_3.Set(FALSE)
+      Lin(cpturn0Place)
+      Lin(cpturn0PlaceUp)
+      iPlaceY := iPlaceY + 1
+      WaitIsFinished()
+      IF iPlaceY = 3 THEN
+         iPlaceY := 0
+         iPlaceX := iPlaceX + 1
+         WaitIsFinished()
+         IF iPlaceX = 3 THEN
+            iPlaceX := 0
+            WaitIsFinished()
+            PlaceConv.Done(objPlace)
+            WaitIsFinished()
+            WAIT NOT IEC.gbDelta3StopConv1
+            bRestartBeltR1.Pulse(20)
+         END_IF
+      END_IF
+   END_IF
+END_IF

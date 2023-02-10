@@ -1,0 +1,49 @@
+// KAIROVersion 2.20
+//Dyn(dybPlace)
+RefSys(World)
+Tool(DefaultTool)
+IF iPlacePark = 0 THEN
+   IF PlaceConv.Wait(objPlace, iAttribute, , 100) <> WAITSUCCESS THEN
+   RefSys(World)
+   Tool(DefaultTool)
+   Lin(cpWaitPlace)
+   PlaceConv.Wait(objPlace)
+   END_IF
+END_IF
+RefSys(objPlace.refSys)
+Tool(DefaultTool)
+IF iPlacePark = 0 THEN
+   Lin(cpturn0PlaceUp)
+   OnParameter(50) DO do_PozhenkongR2.Pulse(50, TRUE)
+   OnParameter(10) DO do_Zhenkong_1.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_2.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_3.Set(FALSE)
+   Lin(cpturn0Place)
+   Lin(cpturn0PlaceUp)
+   WaitIsFinished()
+   iPlacePark := 1
+ELSIF iPlacePark = 1 THEN
+   Lin(cpturn1PlaceUp)
+   OnParameter(50) DO do_PozhenkongR2.Pulse(50, TRUE)
+   OnParameter(10) DO do_Zhenkong_1.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_2.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_3.Set(FALSE)
+   Lin(cpturn1Place)
+   Lin(cpturn1PlaceUp)
+   WaitIsFinished()
+   iPlacePark := 2
+ELSIF iPlacePark = 2 THEN
+   Lin(cpturn2PlaceUp)
+   OnParameter(50) DO do_PozhenkongR2.Pulse(50, TRUE)
+   OnParameter(10) DO do_Zhenkong_1.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_2.Set(FALSE)
+   OnParameter(10) DO do_Zhenkong_3.Set(FALSE)
+   Lin(cpturn2Place)
+   Lin(cpturn2PlaceUp)
+   WaitIsFinished()
+   PlaceConv.Done(objPlace)
+   WaitIsFinished()
+   WAIT NOT IEC.gbDelta3StopConv2
+   bRestartBeltR2.Pulse(20)
+   iPlacePark := 0
+END_IF

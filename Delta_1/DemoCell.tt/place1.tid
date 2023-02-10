@@ -1,0 +1,17 @@
+cpWaitPlace : CARTPOS := (x:=81.3013, y:=-325.408, z:=616.06, a:=-90.0044, mode:=0)
+cpPlace : CARTPOS := (x:=-61.8088, y:=-332.221, z:=581.786, a:=-90.0026, mode:=0)
+cpPlaceUp : CARTPOS := (x:=-61.7979, y:=-332.211, z:=609.511, a:=-89.996, mode:=0)
+bRestartBeltR2 : BOOLSIGOUT := (signal:=MAPX("IEC.VAR.GVL_ConveyorTracking.gbPlaceBeltPulseR2"))
+cdPalR2 : CARTDIST := (dz:=-200)
+dybPlace : DYNAMIC := (velAxis:=100, accAxis:=100, decAxis:=100, jerkAxis:=100, vel:=6000, acc:=60000,
+dec:=60000, jerk:=6.5e+06, velOri:=360, accOri:=3600, decOri:=3600, jerkOri:=3e+06)
+dynPlace1 : DYNAMIC := (velAxis:=100, accAxis:=100, decAxis:=100, jerkAxis:=100, vel:=6000, acc:=40000,
+dec:=30000, jerk:=6.5e+06, velOri:=360, accOri:=3600, decOri:=3600, jerkOri:=3e+06)
+cdPlace : CARTDIST := (dz:=5)
+cp0 : CARTPOS := (x:=-59.7452, y:=11.7721, z:=581.786, a:=-90.0026, mode:=0)
+cpturn0Place : CARTPOSTURN0 := (x:=-155, y:=-40, a:=-90, mode:=0)
+cpturn0PlaceUp : CARTPOSTURN0 := (x:=-155, y:=-40, z:=-70, a:=-90)
+cpturn1PlaceUp : CARTPOSTURN0 := (x:=-165, y:=-35, z:=-40, a:=-90)
+cpturn1Place : CARTPOSTURN0 := (x:=-165, y:=-35, z:=-40, a:=-90)
+cpturn2PlaceUp : CARTPOSTURN0 := (x:=-165, y:=5, z:=-40, a:=-90)
+cpturn2Place : CARTPOSTURN0 := (x:=-165, y:=5, z:=-40, a:=-90)

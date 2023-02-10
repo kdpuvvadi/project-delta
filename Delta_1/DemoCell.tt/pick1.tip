@@ -1,0 +1,18 @@
+// KAIROVersion 2.20
+RefSys(World)
+Tool(DefaultTool)
+objPick.SetSyncJobParam(0.2)
+IF PickConv_1.Wait(objPick, iAttribute, , 100) <> WAITSUCCESS THEN
+   RefSys(World)
+   Tool(DefaultTool)
+   Lin(cpWaitPick)
+   PickConv_1.Wait(objPick)
+END_IF
+RefSys(objPick.refSys)
+Tool(DefaultTool)
+Lin(cpturn1PickUP)
+OnParameter(20) DO do_Zhenkong_2.Set(TRUE)
+Lin(cpturn1Pick, , orPick)
+Lin(cpturn1PickUP)
+WaitIsFinished()
+PickConv_1.Done(objPick, TRUE)

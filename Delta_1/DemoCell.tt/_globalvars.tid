@@ -1,0 +1,42 @@
+objPick : TRACKOBJECT := (refSys := (baseRefSys := MAP(crsCamera2)))
+apHome : AXISPOS := ()
+iPickTime : DINT := 10
+iAttribute : DINT := 0
+iPickCnt : DINT := 0
+objPlace : TRACKOBJECT := (refSys := (baseRefSys := MAP(crsPlaceConv)))
+iPlaceTime : DINT := 10
+do_Zhenkong_1 : BOOLSIGOUT := (signal := MAPX("do_Zhenkong_1_R2"))
+bWait : BOOL := FALSE
+iIncreaseCount : INT := 1
+iPalCount : INT := 0
+R2pallet0 : PALLET := (palRefSys := MAP(objPlace.refSys), palletDir := Pal_dir_Z_inv, numberOfParts := (5,
+, 4), distanceOfParts := (-79, 50, -10), firstPartOnPalletPos := (x := 140, y := 187, z := 130, mode := 0),
+palletEntryPoint := (x := -20, y := 130, z := -80, mode := 0), prePlaceOptions := (isInUse := TRUE, height := -180),
+postPlaceOptions := (isInUse := TRUE, height := -180))
+R2pallet1 : PALLET := (palRefSys := MAP(objPlace.refSys), palletDir := Pal_dir_Z_inv, numberOfParts := (5,
+, 4), distanceOfParts := (-79, , -10), firstPartOnPalletPos := (x := 140, y := 80, z := 130, a := -180),
+palletEntryPoint := (x := -20, y := 130, z := -80, a := -180), prePlaceOptions := (isInUse := TRUE, height := -180),
+postPlaceOptions := (isInUse := TRUE, height := -180))
+bWaitBool : BOOLSIGOUT := (signal := MAP(bWait))
+bChuiqiR2 : BOOLSIGOUT := (signal := MAPX("do_Chuiqi_R2"))
+ChuiqiTimeR2 : DINT := 200
+cpWaitPos : CARTPOS := (x := 1195.77, y := 82.2105, z := 740.22, a := 90.1438, mode := 0)
+iPickPark : INT := 0
+do_Zhenkong_2 : BOOLSIGOUT := (signal := MAPX("do_Zhenkong_2_R2"))
+do_Zhenkong_3 : BOOLSIGOUT := (signal := MAPX("do_Zhenkong_3_R2"))
+r0 : REAL := -64.927
+r1 : REAL := 0
+t0 : TOOL := (guard := (vector := ((active := TRUE, type := BEGINTRANSFORMATION), (), (), (), (), (),
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+r2 : REAL := 0
+r3 : REAL := 0
+r4 : REAL := 0
+cpturn0Pick : CARTPOSTURN0 := (x := 128.306, y := -20.9167, a := -90, mode := 0)
+cpturn0PickUP : CARTPOSTURN0 := (x := 128.571, y := 19.222, z := -60, a := -90, mode := 0)
+cpturn1Pick : CARTPOSTURN0 := (a := -90, mode := 0)
+cpturn1PickUP : CARTPOSTURN0 := (z := -60, a := -90, mode := 0)
+cpturn2Pick : CARTPOSTURN0 := (x := -129.904, y := -4.99268, a := -90, mode := 0)
+cpturn2PickUP : CARTPOSTURN0 := (x := -127.9, y := -23.2733, z := -60, a := -90, mode := 0)
+cpWaitPick : CARTPOS := (x := -280.215, y := 0.0667371, z := 651.696, a := -90.0006, mode := 0)
+iPlacePark : DINT := 0
+do_PozhenkongR2 : BOOLSIGOUT := (signal := MAPX("do_PoZhenKong2"))

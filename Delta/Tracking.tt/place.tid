@@ -1,0 +1,9 @@
+cpWaitPlace : CARTPOS := (x := -21.0097, y := -85.3689, z := 610.528, mode := 0)
+dynPlace : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 8500, 
+acc := 45000, dec := 45000, jerk := 3e+06, velOri := 1000, accOri := 3600, decOri := 3600, jerkOri := 3e+06)
+cp0 : CARTPOS := (x := -200, z := 680, mode := 0)
+cp1 : CARTPOS := (x := -200, y := -380, z := 680, mode := 0)
+cp2 : CARTPOS := (x := -200, y := -380, z := 725, a := -0.0150318, mode := 0)
+cp_to_drop : CARTPOS := (x := -200, y := -400, z := 680, mode := 0)
+cp3 : CARTPOS := ()
+cp_drop_down : CARTPOS := (x := -200, y := -400, z := 725)

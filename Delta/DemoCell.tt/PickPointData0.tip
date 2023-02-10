@@ -1,0 +1,35 @@
+// KAIROVersion 2.20
+cpturn0Pick.x := 0
+cpturn0Pick.y := 0
+cpturn0PickUP.x := 0
+cpturn0PickUP.y := 0
+WaitIsFinished()
+WaitTime(10)
+IF (r0 < -87) AND (r0 > -93) THEN
+   cpturn0Pick.x := -(130 * COS(r0))
+   cpturn0PickUP.x := -(130 * COS(r0))
+   cpturn0Pick.y := -(130 * SIN(r0))
+   cpturn0PickUP.y := -(130 * SIN(r0))
+ELSIF (r0 > 87) AND (r0 < 93) THEN
+   cpturn0Pick.x := 130 * COS(r0)
+   cpturn0PickUP.x := 130 * COS(r0)
+   cpturn0Pick.y := -(130 * SIN(r0))
+   cpturn0PickUP.y := -(130 * SIN(r0))
+ELSIF (r0 < 1) AND (r0 > -1) THEN
+   cpturn0Pick.x := 130 * COS(r0)
+   cpturn0PickUP.x := 130 * COS(r0)
+ELSE
+   IF r0 < 0 THEN
+   cpturn0Pick.x := r4 * -1
+   cpturn0PickUP.x := r4 * -1
+   cpturn0Pick.y := r1 * -1
+   cpturn0PickUP.y := r1 * -1
+   ELSIF r0 > 0 THEN
+   cpturn0Pick.x := r2
+   cpturn0PickUP.x := r2
+   cpturn0Pick.y := r3
+   cpturn0PickUP.y := r3
+   END_IF
+END_IF
+WaitIsFinished()
+WaitTime(10)

@@ -1,0 +1,19 @@
+// KAIROVersion 2.20
+//Ramp(MINJERK)
+//Dyn(d0)
+//WHILE TRUE DO
+//   //MoveRobotAxis(A3, -25.0)
+//   //MoveRobotAxis(A3, 70.0)
+//   Lin(cp1)
+//   Lin(cp2)
+//   Lin(cp1)
+//   Lin(cp3)
+//   Lin(cp4)
+//   Lin(cp3)
+//END_WHILE
+WHILE TRUE DO
+   QiGang.Set(TRUE)
+   WaitTime(1500)
+   QiGang.Set(FALSE)
+   WaitTime(1500)
+END_WHILE

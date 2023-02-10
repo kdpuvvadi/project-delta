@@ -1,0 +1,4 @@
+// KAIROVersion 2.20
+WHILE TRUE DO
+   WaitTime(1000)
+END_WHILE

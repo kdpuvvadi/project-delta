@@ -1,0 +1,8 @@
+d0 : DYNAMIC := (velAxis := 100, accAxis := 20, decAxis := 20, jerkAxis := 20, vel := 6000, acc := 30000,
+dec := 30000, jerk := 3e+06, velOri := 360, accOri := 3600, decOri := 3600, jerkOri := 3e+06)
+cp1 : CARTPOS := (x := -234.818, y := -249.684, z := 781.896, a := -179.26, mode := 0)
+cp2 : CARTPOS := (x := -234.816, y := -249.683, z := 853.395, a := -179.261, mode := 0)
+cp3 : CARTPOS := (x := 304.499, y := -249.671, z := 769.713, a := -179.261, mode := 0)
+cp4 : CARTPOS := (x := 304.501, y := -249.664, z := 873.58, a := -179.261, mode := 0)
+cp0 : CARTPOS := (x := 140.141, y := 25.0003, z := 595.01, a := 89.9615, mode := 0)
+QiGang : BOOLSIGOUT := (signal := MAPX("do_Zhenkong_3_R3"))

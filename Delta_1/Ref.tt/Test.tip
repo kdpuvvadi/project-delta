@@ -1,0 +1,17 @@
+// KAIROVersion 2.20
+//Ovl(or0)
+WHILE TRUE DO
+   //Lin(cp4, dynFast, or0)
+   //Lin(cp5, d0, orPick)
+   //Lin(cp4, d0, or0)
+   //Lin(cp0)
+   //Lin(cp1)
+   //Lin(cp2)
+   //Lin(cp3)
+   //Lin(cp2)
+   //Lin(cp1)
+   //Lin(cp0)
+   Lin(cp6, dynFast, or0)
+   Lin(cp7, d0, orPick)
+   Lin(cp6, d0, or0)
+END_WHILE

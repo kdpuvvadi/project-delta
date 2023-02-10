@@ -1,0 +1,9 @@
+cp0 : CARTPOS := (x := 1155.69, y := -282.174, z := 868.668, a := 11.942, mode := 0)
+cp1 : CARTPOS := (x := 1155.69, y := -282.174, z := 748.24, a := 11.942, mode := 0)
+cp2 : CARTPOS := (x := 1748.41, y := -282.174, z := 748.24, a := 11.942, mode := 0)
+cp3 : CARTPOS := (x := 1748.41, y := -282.174, z := 860.324, a := 11.942, mode := 0)
+or0 : OVLREL := ()
+ap0 : AXISPOS := (a1 := -0.0384639, a2 := 21.8685, a3 := 15.6249, a4 := 187.369)
+ap1 : AXISPOS := (a1 := -33.1171, a2 := 21.8684, a3 := 15.6249, a4 := 87.0965)
+d0 : DYNAMIC := (velAxis := 100, accAxis := 50, decAxis := 50, jerkAxis := 100, vel := 6000, acc := 10000,
+dec := 6000, jerk := 3e+06, velOri := 360, accOri := 3600, decOri := 3600, jerkOri := 3e+06)

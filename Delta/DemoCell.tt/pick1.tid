@@ -1,0 +1,13 @@
+cpPrePick : CARTPOS := (z:=-105, a:=-90)
+cpPostPick : CARTPOS := (x:=-1.3457e-05, y:=5.25999e-06, z:=100, a:=-180, b:=180)
+cpPick : CARTPOS := (z:=-34, a:=-90)
+cpturn0_PrePick : CARTPOSTURN0 := (a:=90, mode:=0)
+bSigOut0 : BOOLSIGOUT := ()
+bSigOut1 : BOOLSIGOUT := ()
+bWaitBool : BOOLSIGOUT := (signal:=MAP(bWait))
+cpPostpick : CARTPOS := (z:=-80, a:=90)
+dynPick : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 10000, 
+acc := 100000, dec := 100000, jerk := 6.5e+06, velOri := 360, accOri := 3600, decOri := 3600, jerkOri := 3e+06)
+dSinePlace : DYNAMIC := (velAxis:=100, accAxis:=100, decAxis:=100, jerkAxis:=100, vel:=8000, acc:=36000,
+dec:=36000, jerk:=3e+06, velOri:=1000, accOri:=3000, decOri:=2000, jerkOri:=1e+06)
+or200 : OVLREL := (ovl:=200)

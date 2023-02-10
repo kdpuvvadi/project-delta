@@ -1,0 +1,4 @@
+bStop : BOOL
+or0 : OVLREL := ()
+GlobeDyn : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 10000,
+acc := 72000, dec := 72000, jerk := 3e+06, velOri := 1000, accOri := 3000, decOri := 2000, jerkOri := 3e+06)

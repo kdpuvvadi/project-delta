@@ -1,0 +1,55 @@
+// KAIROVersion 2.20
+RefSys(World)
+Dyn(dynFast)
+Ovl(os200)
+M := 0
+N := 0
+Robo_2_Pick := 0
+Tool(DefaultTool)
+objPick.SetSyncJobParam(0.2)
+cpturn_pikup.a := 0.0
+LOOP 2 DO
+   LABEL TryAgain
+   IF PickConv_1.Wait(objPick, iAttribute, , 100) <> WAITSUCCESS THEN
+      RefSys(World)
+      Tool(DefaultTool)
+      Lin(cpWaitPick)
+      PickConv_1.Wait(objPick)
+      cpturn_pikup.a := 0.0
+   END_IF
+   RefSys(objPick.refSys)
+   IF Robo_2_Pick = 0 THEN
+      Robo_2_Pick := 1
+      Tool(T3)
+      Lin(cpturn_pikup)
+      OnParameter(10) DO bSigOut_Vacuum_3.Set(TRUE)
+      Lin(cp_pickdow)
+      WaitTime(PickWait)
+      WaitIsFinished()
+      M := 1
+   ELSE
+      Robo_2_Pick := 0
+      Tool(T4)
+      Lin(cpturn_pikup)
+      OnParameter(60) DO bSigOut_Vacuum_4.Set(TRUE)
+      Lin(cp_pickdow, , orPick)
+      WaitTime(PickWait)
+      WaitIsFinished()
+      N := 1
+   END_IF
+   Lin(cpturn_pikup)
+   cpturn_pikup.a := 0.0
+   IF NOT (T3_Vacuum_sensor.signal) AND (M =1) THEN
+      Robo_2_Pick := 0
+      bSigOut_Vacuum_3.Set(FALSE)
+      GOTO TryAgain
+      M := 0
+   END_IF
+   IF NOT (T4_Vacuum_sensor.signal) AND (N =1) THEN
+      Robo_2_Pick := 1
+      bSigOut_Vacuum_4.Set(FALSE)
+      GOTO TryAgain
+      N := 0
+   END_IF
+   PickConv_1.Done(objPick, TRUE)
+END_LOOP

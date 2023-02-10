@@ -1,0 +1,8 @@
+// KAIROVersion 2.20
+bEnableConv1.Set(TRUE)
+IF IEC.gbErrorStop1 THEN
+   Error("Conv1 error,please check drives")
+END_IF
+WAIT IEC.gbConv1Powered
+WaitTime(2000)
+bStartConv1.Set(TRUE)

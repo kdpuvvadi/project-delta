@@ -1,0 +1,28 @@
+// KAIROVersion 2.20
+//IO.do_DM0 := FALSE
+//IO.do_DM2 := FALSE
+// \\\\\\\\\\
+//cpturn_pickup.a := crsCamera1.a + IEC.r1picka
+//cpturn_pickup.b := crsCamera1.b
+//cpturn_pickup.c := crsCamera1.c
+//cpturn_pickup.z := IEC.r1pickup
+//cp_pickdow.z := IEC.r1pickdow
+//// \\\\\\\\\\
+//cp_pickdow.a := crsCamera1.a
+//cp_pickdow.b := crsCamera1.b
+//cp_pickdow.c := crsCamera1.c
+// \\\\\\\\\\
+//maduo1.firstPartOnPalletPos.x := IEC.r1maduofx
+//maduo1.firstPartOnPalletPos.y := IEC.r1maduofy
+//maduo1.firstPartOnPalletPos.z := IEC.r1maduofz
+//maduo1.firstPartOnPalletPos.a := crsPlaceConv.a + IEC.r1maduofa
+//maduo1.firstPartOnPalletPos.b := crsPlaceConv.b
+//maduo1.firstPartOnPalletPos.c := crsPlaceConv.c
+//// \\\\\\\\\\
+////maduo1.numberOfParts[0] := IEC.r1maduogx
+//maduo1.numberOfParts[1] := IEC.r1maduogy
+//maduo1.numberOfParts[2] := IEC.r1maduogz
+//// \\\\\\\\\\
+//maduo1.distanceOfParts[0] := IEC.r1maduopx
+//maduo1.distanceOfParts[1] := IEC.r1maduopy
+//maduo1.distanceOfParts[2] := IEC.r1maduopz

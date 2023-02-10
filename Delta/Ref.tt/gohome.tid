@@ -1,0 +1,8 @@
+ap0 : AXISPOS := ()
+oa0 : OVLABS := ()
+d0 : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 5000, acc := 22000, 
+dec := 22000, jerk := 3e+06, velOri := 1000, accOri := 3000, decOri := 2000, jerkOri := 3e+06)
+cp0 : CARTPOS := (x := -116.896, y := -327.612, z := 613.146, a := 98.6704, mode := 0)
+cp1 : CARTPOS := (x := 260.436, y := -327.603, z := 613.156, a := 98.658, mode := 0)
+cp2 : CARTPOS := (x := -36.4503, y := -49.8894, z := 613.213, a := 98.664, mode := 0)
+or0 : OVLREL := ()

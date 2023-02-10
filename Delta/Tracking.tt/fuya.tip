@@ -1,0 +1,8 @@
+// KAIROVersion 2.20
+WAIT b1
+b1 := FALSE
+IF NOT IO.do_DM10 THEN
+   b0 := TRUE
+ELSE
+   i0 := 0
+END_IF

@@ -1,0 +1,6 @@
+// KAIROVersion 2.20
+RefRobotAxis(A1)
+RefRobotAxis(A2)
+RefRobotAxis(A3)
+RefRobotAxis(A4)
+//PTP(ap0)

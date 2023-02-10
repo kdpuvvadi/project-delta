@@ -1,0 +1,9 @@
+Robo_2_Pick : DINT := 0
+T3 : TOOL := (x := 32, y := -3, z := 10, guard := (vector := ((active := TRUE, type := BEGINTRANSFORMATION), 
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+T4 : TOOL := (x := -38, y := -1.5, z := 11, guard := (vector := ((active := TRUE, type := BEGINTRANSFORMATION), 
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+M : DINT := 0
+N : DINT := 0
+T3_Vacuum_sensor : BOOLSIGIN := (signal := MAPX("di_DM11"))
+T4_Vacuum_sensor : BOOLSIGIN := (signal := MAPX("di_DM12"))

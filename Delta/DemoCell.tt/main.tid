@@ -1,0 +1,6 @@
+bStop : BOOL := FALSE
+or0 : OVLREL := ()
+bConnectCam : BOOLSIGOUT := (signal := MAPX("do_PlaceFinish"))
+ap0 : AXISPOS := ()
+GlobeDyn : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 10000,
+acc := 72000, dec := 72000, jerk := 6e+06, velOri := 1000, accOri := 3000, decOri := 2000, jerkOri := 1e+06)

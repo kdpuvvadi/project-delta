@@ -1,0 +1,28 @@
+objPick : TRACKOBJECT := (refSys := (baseRefSys := MAP(Delta.crsCamera1)))
+iAttribute : DINT := 0
+objPlace : TRACKOBJECT := (refSys:=(baseRefSys := MAP(Delta.crsPlaceConv)))
+cpWaitPick : CARTPOS := (x := -200, z := 680, mode := 0)
+cpturn_pickup : CARTPOSTURN0 := (z := -20)
+cp_pickdow : CARTPOS := (z := 20)
+maduo1 : PALLET := (palRefSys:=MAP(objPlace.refSys), palletDir:=Pal_dir_Z_inv, numberOfParts:=(4,2, 2),
+distanceOfParts:=(-80, 80, 30), firstPartOnPalletPos:=(x := -55.4229, y := 50.4026, z := -49.399,b := 180,
+mode := 0), palletEntryPoint:=(), prePlaceOptions:=(), postPlaceOptions:=())
+cp_maduoup : CARTPOS := ()
+bSigOut_aphome : BOOLSIGOUT := (signal := MAPX("IEC.VAR.GVL_ConveyorTracking.gbGetSafePos"))
+or0 : OVLREL := (ovl:=200)
+b0 : BOOL := FALSE
+i0 : DINT := 0
+bSigOut0_fujc : BOOLSIGOUT := (signal := MAP(b1))
+b1 : BOOL := FALSE
+bSignOut_Robo_1_PlaceDone : BOOLSIGOUT := (signal := MAPX("do_DM13"))
+bSigOut_Vacuum_1 : BOOLSIGOUT := (signal := MAPX("do_DM0"))
+bSigOut_Vacuum_2 : BOOLSIGOUT := (signal := MAPX("do_DM1"))
+bSigIn_Robo1_PlaceWait : BOOLSIGIN := (signal := MAPX("di_DM13"))
+ClearBuff : BOOLSIGOUT := (signal := MAPX("IEC.VAR.GVL_ConveyorTracking.gbClearBuffer"))
+bGetSafePos : BOOLSIGOUT := (signal := MAPX("IEC.VAR.GVL_ConveyorTracking.gbGetSafePos"))
+bConnectCam : BOOLSIGOUT := (signal := MAPX("IEC.VAR.GVL_ConveyorTracking.gbCamConnected"))
+ONline : BOOLSIGOUT := (signal := MAPX("IEC.VAR.ConvCtrl.gbEnable1"))
+cp4 : CARTPOS := ()
+cp_drop_two : CARTPOS := (x := -200, y := -350, z := 680)
+cp_drop_down2 : CARTPOS := (x := -200, y := -350, z := 725)
+bSigOut0_robo_ready_to_place : BOOLSIGOUT := (signal := MAPX("do_DM11"))

@@ -1,0 +1,8 @@
+// KAIROVersion 2.20
+bEnableConv2.Set(TRUE)
+IF IEC.gbErrorStop2 THEN
+   Error("Conv2 error,please check drives")
+END_IF
+WAIT IEC.gbConv2Powered
+WaitTime(2000)
+bStartConv2.Set(TRUE)

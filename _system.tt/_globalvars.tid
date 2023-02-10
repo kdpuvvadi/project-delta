@@ -1,0 +1,4 @@
+os200 : OVLSUPPOS := ()
+dynFast : DYNAMIC := (velAxis := 100, accAxis := 100, decAxis := 100, jerkAxis := 100, vel := 10000, 
+acc := 100000, dec := 100000, jerk := 3e+06, velOri := 360, accOri := 3600, decOri := 3600, jerkOri := 3e+06)
+orPick : OVLREL := (ovl := 0)

@@ -1,0 +1,27 @@
+// KAIROVersion 2.20
+RefSys(World)
+Tool(DefaultTool)
+Dyn(dSinePlace)
+Ovl(or200)
+objPick.SetSyncJobParam(0.2)
+IF PickConv.Wait(objPick, iAttribute, , 100) <> WAITSUCCESS THEN
+RefSys(World)
+Tool(DefaultTool)
+Lin(cpWaitPick)
+PickConv.Wait(objPick)
+END_IF
+RefSys(objPick.refSys)
+Tool(DefaultTool)
+   r0 := objPick.objectPosition.a
+   r1 := 130 * SIN(r0)
+   r2 := 130 * COS(r0)
+   r3 := 0 -(130 * SIN(r0))
+   r4 := 0 -(130 * COS(r0))
+   WaitIsFinished()
+      CALL PickPointData2()
+      Lin(cpturn2PickUP, dynFast, or100)
+      OnParameter(20) DO do_Zhenkong_1.Set(TRUE)
+      Lin(cpturn2Pick, dynPick, or0)
+      Lin(cpturn2PickUP, dynPick, or100)
+PickConv.Done(objPick, TRUE)
+WaitIsFinished()

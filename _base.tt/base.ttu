@@ -1,0 +1,1629 @@
+GLOBAL
+
+   // Types
+   TYPE
+      PLOTDATA : STRUCT
+         boardWidth : REAL;
+         boardHeight : REAL;
+         lineSpacing : REAL;
+         penUpDist : REAL;
+         fontSize : REAL;
+         widthScaling : REAL;
+      END_STRUCT { prefix="pd"|category="50_System_and_Technology"|no_var="ROOT.ApplicationInterface.hide_Plotdata"|default|reuse };
+      TRcDrivesDataSet : STRUCT
+         drive : ARRAY [0..15] OF TRcDriveData;
+         wasReset : BOOL;
+         integrationPeriod_s : REAL;
+         maxIntegrationPeriod_s : REAL;
+         enableDriveMask : BOOL;
+      END_STRUCT { no_var };
+      TRcDriveData : STRUCT
+         setVals : TRcCyclicDriveDataBuffer;
+         actVals : TRcCyclicDriveDataBuffer;
+         actBufferIndex : INT;
+         motorData : MAPTO TRcMotorData;
+         driveName : STRING;
+         motorTemperature : REAL;
+         amplifierTemperature : REAL;
+         brakingResistorLoad : REAL;
+         thermalDriveLoad : REAL;
+      END_STRUCT { no_var };
+      TRcMotorData : STRUCT
+         motorType : STRING { nowarn_unref };
+         controllerType : STRING { nowarn_unref };
+         motorContinuous : ARRAY [0..1] OF TRcMotorCharacteristics { nowarn_unref };
+         motorPeak : ARRAY [0..1] OF TRcMotorCharacteristics { nowarn_unref };
+         controllerContinuous : TRcMotorCharacteristics { nowarn_unref };
+         controllerPeak : TRcMotorCharacteristics { nowarn_unref };
+         isValid : BOOL { nowarn_unref };
+      END_STRUCT { no_var };
+      TRcMotorCharacteristics : STRUCT
+         N : ARRAY [0..6] OF REAL { nowarn_unref };
+         T : ARRAY [0..6] OF REAL { nowarn_unref };
+      END_STRUCT { no_var };
+      TRcCyclicDriveData : STRUCT
+         torqueAbs : REAL { nowarn_unref };
+         rpmAbs : REAL { nowarn_unref };
+         torqueRMS : REAL { nowarn_unref };
+         rpmMean : REAL { nowarn_unref };
+         isValid : BOOL { nowarn_unref };
+      END_STRUCT { no_var };
+      TPrePostPlace : STRUCT
+         isInUse : BOOL;
+         height : REAL;
+         sideOffset : REAL;
+      END_STRUCT { no_var };
+      GUARDPOINT : STRUCT
+         active : BOOL;
+         x : REAL;
+         y : REAL;
+         z : REAL;
+         radius : REAL;
+         type : GUARDLOCATION := OFFSETFLANGE;
+         mode : GUARDMODE := POSGUARD { hide="ROOT.gRcSelectedRobotData.noDynMonAvailable" };
+      END_STRUCT { no_var };
+      CARTDYNAMICLIMITS : STRUCT
+         pos : REGIONLIMITS;
+         ori : REGIONLIMITS;
+      END_STRUCT { no_var };
+      GUARDMASK : STRUCT
+         kind : MONITORINGGUARDTYPE { hide="ROOT.gRcSelectedRobotData.noDynMonAvailable" };
+         regions : MONITORINGREGION;
+         guardRegion : MONITORINGGUARDREGION;
+      END_STRUCT { no_var="ROOT.gRcSelectedRobotData.noCartAvailable"|prefix="guardMask"|category="50_System_and_Technology"|enable="ROOT.gRcSelectedRobotData.cartAvailable" };
+      CARTDYNMONITORING : STRUCT
+         guardMonitoring : MAPTO GUARDMONITORINGLIMITS { showemptyref };
+         monitoringVar : MAPTO BOOL CONST { showemptyref };
+      END_STRUCT { no_var };
+      JOINTDYNMONITORING : STRUCT
+         jointMonitoring : MAPTO JOINTMONITORINGLIMITS { showemptyref };
+         monitoringVar : MAPTO BOOL CONST { showemptyref };
+      END_STRUCT { no_var };
+      DYNGUARDS : STRUCT
+         regions : MONITORINGREGION;
+         guardRegion : MONITORINGGUARDREGION;
+      END_STRUCT { no_var };
+      MONITORINGGUARDREGION : STRUCT
+         tcp : BOOL;
+         flange : BOOL;
+         elbow : BOOL;
+         tool : BOOL;
+         workpiece : BOOL;
+         jointRegion : MONITORINGJOINTREGION;
+      END_STRUCT { no_var };
+      REGIONLIMITS : STRUCT
+         tcp : REAL;
+         flange : REAL;
+         elbow : REAL;
+         tool : REAL;
+         workpiece : REAL;
+         joints : JOINTVECTOR;
+      END_STRUCT { no_var };
+      TRACKINGLIMIT : STRUCT
+         enable : BOOL;
+         pos : REAL;
+         syncType : TRACKSYNCMODE := SYNCMAXDIST;
+         syncDistance : REAL := 30;
+         syncUsingPathDynamic : BOOL := TRUE;
+         syncAcce : REAL := 5000;
+         syncJerk : REAL := 100000;
+         syncRampType : RAMPTYPE := MINJERK;
+         syncRampParam : REAL := 0;
+         syncObeyPathAcce : BOOL := TRUE;
+         result : TRACKLIMITRESULT NOINIT;
+         valid : BOOL NOINIT;
+         resSyncDistance : REAL NOINIT;
+         resSyncAcce : REAL NOINIT;
+      END_STRUCT { no_var };
+      CONVTRACKLIMIT : STRUCT
+         enable : BOOL;
+         syncDistance : REAL := 30;
+         syncObeyPathAcce : BOOL := TRUE;
+         result : TRACKLIMITRESULT NOINIT;
+         valid : BOOL NOINIT;
+         resSyncDistance : REAL NOINIT;
+         resSyncAcce : REAL NOINIT;
+      END_STRUCT { no_var };
+      SIGNALDYNAMIC : STRUCT
+         nomVelo : REAL;
+         maxVelo : REAL;
+         maxAcce : REAL;
+         result : TRACKLIMITRESULT NOINIT;
+      END_STRUCT { no_var };
+      CONVAREADATA : STRUCT
+         minPosY : REAL READONLY NOINIT;
+         maxPosY : REAL READONLY NOINIT;
+         minPosZ : REAL READONLY NOINIT;
+         maxPosZ : REAL READONLY NOINIT;
+         pickPos : CARTPOS READONLY NOINIT := ();
+         pickPosReady : BOOL READONLY NOINIT;
+      END_STRUCT { no_var };
+      POSTYPE : (POS_DEFAULT:=0, ELBOW_ANGLE:=1, ELBOW_JOINT0:=2, CARPAL_PLUNGE:=3, WRIST1:=4, WRIST2:=5) { no_var|hide="POS_DEFAULT, ELBOW_ANGLE, ELBOW_JOINT0, CARPAL_PLUNGE, WRIST1, WRIST2;ROOT.RcData.hiddenElements.posTypes" };
+      IMMOutputSignal : (M_CLOSE:=0, M_FULLOPEN:=1, E_FORWARD:=2, E_BACK:=3, CORE1_IN:=4, CORE1_OUT:=5, CORE2_IN:=6, CORE2_OUT:=7, AUTOMATIC:=8, M_AREA_FREE:=9) { no_var|hide="M_CLOSE,M_FULLOPEN,E_FORWARD,E_BACK,CORE1_IN,CORE1_OUT,CORE2_IN,CORE2_OUT,AUTOMATIC,M_AREA_FREE;ROOT.MacroSetIMM.GetHiddenSignals()" };
+      IOSTATE : (OPEN:=1, CLOSE:=2, OFF:=3, ON:=4) { no_var|hide="OPEN,CLOSE,OFF,ON;ROOT.IMMIODefs.hiddenStates" };
+      ROBOTAXIS : (A1:=1, A2:=2, A3:=3, A4:=4, A5:=5, A6:=6, A7:=7, A8:=8, Aux1:=9, Aux2:=10, Aux3:=11, Aux4:=12, Aux5:=13, Aux6:=14) { no_var|hide="A1,A2,A3,A4,A5,A6,A7,A8,Aux1,Aux2,Aux3,Aux4,Aux5,Aux6;ROOT.RcData.hiddenElements.allAxes" };
+      STATECONNECTION : (CURRENT_PROGRAM_RUNNING:=1, ROBOT_PROGRAM_RUNNING:=2, ROBOT_MOVING:=3) { no_var|hide="CURRENT_PROGRAM_RUNNING,ROBOT_PROGRAM_RUNNING,ROBOT_MOVING;ROOT._MacroDefinitions.hiddenStateConnections" };
+      IMMInputSignal : (M_IS_OPEN:=0, M_IS_CLOSED:=1, M_IS_OPEN_M:=2, E_IS_FORWARD:=3, E_IS_BACK:=4, CORE1_IS_IN:=5, CORE1_IS_OUT:=6, CORE2_IS_IN:=7, CORE2_IS_OUT:=8, IS_AUTOMATIC:=9, IS_M_AREA_FR:=10, IS_REJECT:=11, P_IS_AVAIL:=12, NEW_PART:=14, E_IS_IN_MIDDLE_POS:=15) { no_var|hide="M_IS_OPEN,M_IS_CLOSED,M_IS_OPEN_M,E_IS_FORWARD,E_IS_BACK,CORE1_IS_IN,CORE1_IS_OUT,CORE2_IS_IN,CORE2_IS_OUT,IS_AUTOMATIC,IS_M_AREA_FR,IS_REJECT,P_IS_AVAIL,dummy,NEW_PART,E_IS_IN_MIDDLE_POS;ROOT.MacroWaitIMM.GetHiddenSignals()" };
+      TJointPalletDirection : (Pal_dir_A1_reg:=0, Pal_dir_A1_inv:=1, Pal_dir_A2_reg:=2, Pal_dir_A2_inv:=3, Pal_dir_A3_reg:=4, Pal_dir_A3_inv:=5, Pal_dir_Invalid:=6) { no_var };
+      TPalletDirection : (Pal_dir_X_reg:=0, Pal_dir_X_inv:=1, Pal_dir_Y_reg:=2, Pal_dir_Y_inv:=3, Pal_dir_Z_reg:=4, Pal_dir_Z_inv:=5) { no_var };
+      TPalletOrder : (Pal_order_X_Y_Z:=18, Pal_order_X_Z_Y:=33, Pal_order_Y_X_Z:=258, Pal_order_Y_Z_X:=288, Pal_order_Z_X_Y:=513, Pal_order_Z_Y_X:=528) { no_var };
+      ORIMODE : (CART:=1, CARTCURVE:=2, WRISTJOINT:=3, SPLINE:=7) { no_var|hide="CART,CARTCURVE,WRISTJOINT,SPLINE;ROOT.RcData.hiddenElements.oriMode" };
+      RAMPTYPE : (TRAPEZOID:=1, SINE:=2, SINESQUARE:=3, MINJERK:=4, TIMEOPTIMAL:=5, RISETIME:=6) { no_var|hide="TRAPEZOID,SINE,SINESQUARE,MINJERK,TIMEOPTIMAL,RISETIME;ROOT.RcData.hiddenElements.rampType" };
+      STOPMODE : (ALLAXES:=1, CONTINUETRACKING:=2, HARDSTOP:=3) { no_var };
+      EDGETYPE : (RISINGEDGE:=1, FALLINGEDGE:=2) { no_var };
+      WAITCONDITION : (SPEEDDROP:=1, ASSUREOVL:=2) { no_var };
+      SPLINETYPE : (CUBICSECANT:=0, CUBICSECANTMEAN:=1, CUBICBESSEL:=2, CUBICAKIMA:=3, LINE:=4, CUBICUSERTANGENT:=5) { no_var };
+      GUARDLOCATION : (BEGINTRANSFORMATION:=0, ENDTRANSFORMATION:=1, OFFSETFLANGE:=4, OFFSETTCP:=5) { no_var|hide="BEGINTRANSFORMATION,ENDTRANSFORMATION,OFFSETFLANGE,OFFSETTCP;ROOT.RcGuard.hiddenLocations" };
+      GUARDMODE : (POSGUARD:=1, VELGUARD:=2, POSANDVELGUARD:=3) { no_var };
+      MONITORINGGUARDTYPE : (ALLGUARDS:=0, POSGUARDSONLY:=1, POSANDVELGUARDSONLY:=2) { no_var };
+      MONITORINGREGION : (ALLROBOTGUARDS:=0, SELECTEDROBOTGUARDS:=1) { no_var };
+      PLANETYPE : (XYPLANE:=0, XZPLANE:=1, YZPLANE:=2) { no_var };
+      DISTANCETYPE : (FROMBEGIN:=0, FROMEND:=1) { no_var };
+      CARTAXIS : (X:=1, Y:=2, Z:=3, A:=4, B:=5, C:=6, P1:=7, P2:=8) { no_var|hide="X,Y,Z,A,B,C,P1,P2;ROOT.RcData.hiddenElements.cart" };
+      AREATYPE : (WORKAREA:=0, BLOCKEDAREA:=1, SIGNALWORKAREA:=2, SIGNALBLOCKEDAREA:=3, SHAREDAREA:=4) { no_var|hide="WORKAREA,BLOCKEDAREA,SIGNALWORKAREA,SIGNALBLOCKEDAREA,SHAREDAREA;ROOT.RcAreaDefinitions.hiddenTypes" };
+      AREASHAPE : (BOX:=0, CYLINDER:=1, SPHERE:=2) { no_var|hide="BOX,CYLINDER,SPHERE;ROOT.RcAreaDefinitions.hiddenShapes" };
+      WAITRESULT : (WAITSUCCESS:=0, WAITABORTED:=1, WAITERROR:=2, WAITRESTRICTEDAREA:=3, WAITLEFTAREA:=4, WAITTIMEOUT:=5) { prefix="res"|category="50_System_and_Technology"|no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable" };
+      TRACKSYNCMODE : (NOSYNC:=0, SYNCDYNAMIC:=1, SYNCDISTANCE:=2, SYNCMINDIST:=3, SYNCMAXDIST:=4) { no_var };
+      TRACKLIMITRESULT : (LIMOK:=0, LIMINVOBJ:=1, LIMINVDIM:=2, LIMOBJINUSE:=3, LIMNOTALLOWED:=4, LIMINVMODE:=5, LIMINVRAMP:=6, LIMINVPARAM:=7, LIMINVPOS:=8, LIMINVSMEMHDL:=9, LIMINVSMEMSIZE:=10, LIMOUTOFMEM:=11) { no_var };
+      WORKINGRANGELIMIT : (LIMITOBJECT:=0, LIMITFLANGE:=1) { no_var };
+      IMMCOMMAND : (OPENMOLD:=1, CONTINUECYCLE:=2) { no_var };
+      TRcCyclicDriveDataBuffer : ARRAY [0..255] OF TRcCyclicDriveData { no_var };
+      JOINTVECTOR : ARRAY [1..16] OF REAL { no_var="ROOT.gRcSelectedRobotData.noDynMonAvailableDebug"|prefix="jointLim"|category="20_Dynamics_and_Overlaps"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailableDebug"|hide="[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16];ROOT.RcData.hiddenElements.jointVectorFull"|reuse };
+      GUARDPOINTS : ARRAY [0..23] OF GUARDPOINT { no_var };
+      MONITORINGJOINTREGION : ARRAY [1..16] OF BOOL { no_var|hide="[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16];ROOT.RcData.hiddenElements.axes" };
+      TPalletNrOfParts : DINT(1..100) { no_var };
+      PERCENT : DINT(0..100) { no_var };
+      PERC200 : DINT(0..200) { no_var };
+   END_TYPE
+
+   // Constants
+   CONSTANT
+      KAIROVersion : STRING := "2.20";
+   END_CONSTANT
+
+   // Variables
+   VAR
+      gRcSelectedRobotData : MAPTO TRcDataRobot CONST { hide="TRUE" };
+      gRcFocussedRobot : MAPTO TRcRobot NOINIT { showref|hide="TRUE" };
+      Flange : FLANGETOOL CONST READONLY { hide="ROOT.RcData.noCartData" };
+      World : WORLDREFSYS CONST { hide="ROOT.RcData.noWorld" };
+      DefaultTool : TOOLSTATIC CONST READONLY { hide="TRUE" };
+      noWp : WORKPIECE CONST { hide="ROOT.RcGuard.disable" };
+      WriteMcStarep : BOOL { hide="ROOT.gRcHideDebugUtils" };
+      gRcTestDebugErrorFlag : BOOL { hide="ROOT.gRcHideDebugUtils" };
+      gRcTestDebugErrorNr : DINT { hide="ROOT.gRcHideDebugUtils" };
+      gRcTestDebugErrorComp : DINT { hide="ROOT.gRcHideDebugUtils" };
+      gRcTestDebugErrorInstanceNr : DINT { hide="ROOT.gRcHideDebugUtils" };
+   END_VAR
+
+   // Routines
+   ROUTINE Decrement (dint : DINT { reuse|var_only|nowarn_hidden }) { macro="20_Settings@204"|color="peripherie"|xmlmask="XML.mask.macro.decrement"|enable="ROOT.MacroDecrement.enable_Decrement"|xmlmaskvar="ROOT.MacroDecrement.dint" };
+   ROUTINE SetIMM (CONST IMMoutput : IMMOutputSignal { init="M_CLOSE" }; CONST val : BOOL { nowarn_hidden }) { macro="25_IOControl@301"|color="peripherie"|xmlmask="XML.mask.macro.setIMM"|enable="ROOT.MacroSetIMM.enable_SetIMM"|xmlmaskvar="ROOT.MacroSetIMM.immOutput;ROOT.MacroSetIMM.val" };
+   ROUTINE RefRobotAxis (CONST axis : ROBOTAXIS; OPTIONAL CONST addMoveTarget : REAL { init="0.0" }; OPTIONAL CONST dyn : DYNAMIC_) : BOOL { macro="10_Movement.120_Homing@1201"|enable="ROOT.MacroDrives.enable_Ref" };
+   ROUTINE RefRobotAxisAsync (CONST axis : ROBOTAXIS; OPTIONAL CONST addMoveTarget : REAL { init="0.0" }; OPTIONAL CONST addMoveDyn : DYNAMIC_) { macro="10_Movement.120_Homing@1202"|enable="ROOT.MacroDrives.enable_Ref" };
+   ROUTINE WaitRefFinished () : BOOL { macro="10_Movement.120_Homing@1203"|color="peripherie"|enable="ROOT.MacroDrives.enable_RefFinished" };
+   ROUTINE PulseBoolSignal (CONST variable : BOOLSIGOUT; OPTIONAL CONST state : BOOL { nowarn_hidden }; CONST pulseLength : REAL { init="0.0"|nowarn_hidden }; OPTIONAL CONST pauseAtInterrupt : BOOL { init="FALSE"|nowarn_hidden }) { macro="25_IOControl@107"|color="peripherie"|xmlmask="XML.mask.macro.pulseBool"|enable="ROOT.IMMIODefs.enable_PulseBool"|xmlmaskvar="ROOT.MacroPulseBool.variable;ROOT.MacroPulseBool.state;ROOT.MacroPulseBool.pulseLength;ROOT.MacroPulseBool.pauseAtInterrupt" };
+   ROUTINE DOKILL (VAR_IN name : STRING);
+   ROUTINE DORUN (VAR_IN name : STRING);
+   ROUTINE Stop (OPTIONAL CONST mode : STOPMODE) { macro="30_Systemfunctions@304"|enable="ROOT.MacroSystem.enable_Stop" };
+   ROUTINE WaitTime (CONST timeMs : DINT) { macro="30_Systemfunctions@303"|color="peripherie"|enable="ROOT.MacroSystem.enable_WaitTime" };
+   ROUTINE WaitIsFinished (OPTIONAL CONST param : PERCENT) { macro="10_Movement@107"|enable="ROOT.MacroSystem.enable_WaitIsFinished" };
+   ROUTINE Info (CONST text : STRING; OPTIONAL CONST param1 : ANY; OPTIONAL CONST param2 : ANY) { macro="30_Systemfunctions@305"|do_allowed|color="peripherie"|enable="ROOT.MacroSystem.enable_Messages" };
+   ROUTINE Warning (CONST text : STRING; OPTIONAL CONST param1 : ANY; OPTIONAL CONST param2 : ANY) { macro="30_Systemfunctions@306"|do_allowed|color="peripherie"|enable="ROOT.MacroSystem.enable_Messages" };
+   ROUTINE Error (CONST text : STRING; OPTIONAL CONST param1 : ANY; OPTIONAL CONST param2 : ANY) { macro="30_Systemfunctions@307"|do_allowed|color="peripherie"|enable="ROOT.MacroSystem.enable_Messages" };
+   ROUTINE SysTime () : DINT { macro="30_Systemfunctions.310_TimeMeasurement@3108"|do_allowed|color="peripherie"|enable="ROOT.MacroSystem.enable_Time" };
+   ROUTINE SysTimeToString (OPTIONAL CONST time : DINT) : STRING { macro="30_Systemfunctions.310_TimeMeasurement@3109"|do_allowed|color="peripherie"|enable="ROOT.MacroSystem.enable_Time" };
+   ROUTINE Random (CONST minVal : REAL; CONST maxVal : REAL) : REAL { macro="30_Systemfunctions@309"|do_allowed|enable="ROOT.MacroSystem.enable_Random" };
+   ROUTINE PathRefSys (OPTIONAL pathRefSys : PATHCORRECTIONVAR) { macro="20_Settings@2056"|enable="ROOT.MacroPathTracking.enablePathTracking" };
+   ROUTINE SetBit (VAR_IN value : LWORD; VAR_IN bitNr : DINT) : LWORD { macro="30_Systemfunctions.330_BitwiseOperationsAndConversions@3305"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ResetBit (VAR_IN value : LWORD; VAR_IN bitNr : DINT) : LWORD { macro="30_Systemfunctions.330_BitwiseOperationsAndConversions@3306"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE CheckBit (VAR_IN value : LWORD; VAR_IN bitNr : DINT) : BOOL { macro="30_Systemfunctions.330_BitwiseOperationsAndConversions@3307"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE SIN (VAR_IN deg : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3201"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE COS (VAR_IN deg : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3202"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE TAN (VAR_IN deg : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3203"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE COT (VAR_IN deg : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3204"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE LN (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3290"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ABS (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3293"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE SQRT (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3294"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE EXP (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3291"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE EXPT (VAR_IN base : REAL; VAR_IN exp : DINT) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3292"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ASIN (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3205"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ACOS (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3206"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ATAN (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3207"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ATAN2 (VAR_IN valY : REAL; VAR_IN valX : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3208"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE ACOT (VAR_IN val : REAL) : REAL { macro="30_Systemfunctions.320_MathematicalFunctions@3209"|enable="ROOT.MacroMath.enable_Math" };
+   ROUTINE WaitBool (CONST variable : BOOL { var_only }; OPTIONAL VAR_IN boolVal : BOOL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5511"|enable="ROOT.MacroSignals.enable_BoolFuncs" };
+   ROUTINE WaitBit (CONST variable : ANY { var_only }; VAR_IN bitNr : DINT; OPTIONAL VAR_IN bitVal : BOOL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5521"|enable="ROOT.MacroSignals.enable_BitFuncs" };
+   ROUTINE WaitBitMask (CONST variable : ANY { var_only }; VAR_IN mask : LWORD; OPTIONAL VAR_IN maskedVal : LWORD; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5522"|enable="ROOT.MacroSignals.enable_BitFuncs" };
+   ROUTINE WaitLess (CONST variable : ANY { var_only }; VAR_IN limit : LREAL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5531"|enable="ROOT.MacroSignals.enable_CompareFuncs" };
+   ROUTINE WaitGreater (CONST variable : ANY { var_only }; VAR_IN limit : LREAL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5532"|enable="ROOT.MacroSignals.enable_CompareFuncs" };
+   ROUTINE WaitInside (CONST variable : ANY { var_only }; VAR_IN minVal : LREAL; VAR_IN maxVal : LREAL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5533"|enable="ROOT.MacroSignals.enable_CompareFuncs" };
+   ROUTINE WaitOutside (CONST variable : ANY { var_only }; VAR_IN minVal : LREAL; VAR_IN maxVal : LREAL; OPTIONAL VAR_IN timeoutMs : DINT) : BOOL { color="peripherie"|macro="55_Signals@5534"|enable="ROOT.MacroSignals.enable_CompareFuncs" };
+   ROUTINE ReadPos (pos : POSITION_; OPTIONAL CONST refSys : REFSYS_) : BOOL { macro="30_Systemfunctions@3091"|enable="ROOT.gRcDebugMode"|color="peripherie" };
+   ROUTINE Increment (dint : DINT { reuse|var_only|nowarn_hidden }) { macro="20_Settings@203"|color="peripherie"|enable="ROOT.MacroIncrement.enable_Increment"|xmlmask="XML.mask.macro.increment"|xmlmaskvar="ROOT.MacroIncrement.dint" };
+   ROUTINE WaitIMM (CONST IMMinput : IMMInputSignal { init="M_IS_OPEN" }) { macro="50_Timing@103"|color="peripherie"|xmlmask="XML.mask.macro.waitIMM"|enable="ROOT.MacroWaitIMM.enable_WaitIMM"|xmlmaskvar="ROOT.MacroWaitIMM.immInput" };
+   ROUTINE SetBoolSignal (CONST variable : BOOLSIGOUT; OPTIONAL CONST state : BOOL { nowarn_hidden }; OPTIONAL CONST setWhileMoving : BOOL { init="FALSE"|nowarn_hidden }; OPTIONAL CONST feedback : BOOLSIGIN; OPTIONAL CONST feedbackTimeout : REAL { init="0.0"|nowarn_hidden }; OPTIONAL CONST waitOnFeedback : BOOL { init="FALSE"|nowarn_hidden }) { macro="25_IOControl@106"|color="peripherie"|xmlmask="XML.mask.macro.setBool"|enable="ROOT.IMMIODefs.enable_SetBool"|xmlmaskvar="ROOT.MacroSetBool.variable;ROOT.MacroSetBool.state;ROOT.MacroSetBool.setWhileMoving;ROOT.MacroSetBool.feedback;ROOT.MacroSetBool.feedbackTimeout;ROOT.MacroSetBool.waitOnFeedback" };
+   ROUTINE PTP (CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_AxisPos" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@101"|color="movement"|enable="ROOT.MacroKinematic.enable_PTP" };
+   ROUTINE Lin (CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@102"|enable="ROOT.RcData.enableCartMoveMacros"|color="movement" };
+   ROUTINE Circ (CONST circPos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@103"|enable="ROOT.RcData.enableCartMoveMacros"|color="movement" };
+   ROUTINE PTPRel (CONST dist : DISTANCE_ { default_var="ROOT.MacroKinematic.default_AxisDist" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@104"|color="movement"|enable="ROOT.MacroKinematic.enable_PTPRel" };
+   ROUTINE LinRel (CONST dist : DISTANCE_ { default_var="ROOT.MacroKinematic.default_CartDist" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@105"|enable="ROOT.RcData.enableCartMoveMacros"|color="movement" };
+   ROUTINE LinRelTCP (CONST dist : CARTDIST { default_var="ROOT.MacroKinematic.default_CartDist" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement@10501"|enable="ROOT.RcData.enableCartMoveMacros"|color="movement" };
+   ROUTINE SplineSeg (CONST splinePos : POSITION_; OPTIONAL CONST startTangentPos : POSITION_; OPTIONAL CONST endTangentPos : POSITION_; OPTIONAL CONST type : SPLINETYPE) { macro="10_Movement@1054"|color="movement"|enable="ROOT.RcData.enableSpline" };
+   ROUTINE EndSpline () { macro="10_Movement@1055"|color="movement"|enable="ROOT.RcData.enableSpline" };
+   ROUTINE SplineType (CONST type : SPLINETYPE) { macro="20_Settings@208"|enable="ROOT.RcData.enableSpline" };
+   ROUTINE StopRobot (OPTIONAL CONST deceFactor : PERCENT { init="100" }; OPTIONAL CONST jerkFactor : PERCENT { init="100" }; OPTIONAL CONST stopMode : STOPMODE { init="ALLAXES" }) { macro="10_Movement@106"|color="movement"|enable="ROOT.MacroKinematic.enable_StopRobot" };
+   ROUTINE PTPUnref (CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_AxisPos" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement.120_Homing@1205"|color="movement"|enable="ROOT.MacroKinematic.enable_PTPUnref" };
+   ROUTINE PTPRelUnref (CONST dist : DISTANCE_ { default_var="ROOT.MacroKinematic.default_AxisDist" }; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement.120_Homing@1206"|color="movement"|enable="ROOT.MacroKinematic.enable_PTPRelUnref" };
+   ROUTINE MoveRobotAxisUnref (CONST axis : ROBOTAXIS; CONST pos : REAL; OPTIONAL CONST dyn : DYNAMIC_ { nowarn_hidden }; OPTIONAL CONST ovl : OVERLAP_ { nowarn_hidden }) { macro="10_Movement.120_Homing@1207"|enable="ROOT.MacroKinematic.enable_MoveRobotAxisUnref"|color="movement" };
+   ROUTINE StopRobotUnref (OPTIONAL CONST deceFactor : PERCENT; OPTIONAL CONST jerkFactor : PERCENT) { macro="10_Movement.120_Homing@1208"|color="movement"|enable="ROOT.MacroKinematic.enable_StopRobotUnref" };
+   ROUTINE DynOvr (CONST ovr : PERCENT) { macro="20_Settings@202"|enable="ROOT.MacroKinematic.enable_DynOvr" };
+   ROUTINE Dyn (CONST dyn : DYNAMIC_) { macro="20_Settings@201"|enable="ROOT.MacroKinematic.enable_Dyn" };
+   ROUTINE Vel (CONST vel : PERCENT) { message="Use macro <Dyn>" };
+   ROUTINE Acc (CONST acc : PERCENT; OPTIONAL CONST dec : PERCENT) { message="Use macro <Dyn>" };
+   ROUTINE Ovl (CONST ovl : OVERLAP_) { macro="20_Settings@203"|enable="ROOT.MacroKinematic.enable_Ovl" };
+   ROUTINE RefSys (CONST refSys : REFSYS_ { default_var="ROOT.MacroKinematic.default_RefSys" }) { macro="20_Settings@205"|enable="ROOT.MacroKinematic.enable_RefSys" };
+   ROUTINE ExternalTCP (CONST extTCP : EXTERNALTCP) { macro="20_Settings@2055"|enable="ROOT.RcData.enableExtTCPMacros" };
+   ROUTINE Tool (CONST tool : TOOL_) { macro="20_Settings@206"|enable="ROOT.MacroKinematic.enable_Tool" };
+   ROUTINE Workpiece (CONST workpiece : WORKPIECE) { macro="20_Settings@209"|enable="ROOT.MacroKinematic.enable_Workpiece" };
+   ROUTINE OriMode (CONST mode : ORIMODE) { macro="20_Settings@207"|enable="ROOT.RcData.enableCartMoveMacros" };
+   ROUTINE Ramp (CONST type : RAMPTYPE; OPTIONAL CONST param : REAL; OPTIONAL CONST typeDece : RAMPTYPE; OPTIONAL CONST paramDece : REAL) { macro="20_Settings@204"|enable="ROOT.MacroKinematic.enable_Ramp" };
+   ROUTINE WaitJustInTime (OPTIONAL CONST condition : WAITCONDITION; OPTIONAL CONST minLATimeMs : DINT { hide="TRUE" }) { macro="10_Movement@108"|enable="ROOT.MacroKinematic.enable_WaitJustInTime" };
+   ROUTINE WaitOnPath (CONST timeMS : DINT) { macro="10_Movement@109"|enable="ROOT.MacroKinematic.enable_WaitOnPath" };
+   ROUTINE WaitSignal (CONST signal : BOOL; OPTIONAL CONST timeout : REAL) { macro="10_Movement@1081"|enable="ROOT.MacroSystem.enable_WaitSignal" };
+   ROUTINE WaitTimeSec (CONST time : REAL { init="0.0"|nowarn_hidden }) { macro="50_Timing@101"|color="peripherie"|xmlmask="XML.mask.macro.wait"|enable="ROOT.MacroWait.enable_Wait"|xmlmaskvar="ROOT.MacroWait.time" };
+   ROUTINE GetIMM (CONST IMMinput : IMMInputSignal { init="IS_REJECT" }) : BOOL { macro="25_IOControl@302"|color="peripherie"|xmlmask="XML.mask.macro.getIMM"|enable="ROOT.MacroGetIMM.enable_GetIMM"|xmlmaskvar="ROOT.MacroGetIMM.immInput" };
+   ROUTINE OnParameter (CONST param : PERCENT { init="0" }; OPTIONAL CONST timeMs : DINT { init="0" }) { macro="60_TechnologyOptions.610_Trigger@6102"|enable="ROOT.MacroTrigger.enable_OnParameter"|color="trigger"|teachmember="param" };
+   ROUTINE OnDistance (CONST type : DISTANCETYPE; CONST dist : REAL; OPTIONAL CONST timeMs : DINT) { macro="60_TechnologyOptions.610_Trigger@6101"|enable="ROOT.RcData.enableCartMoveMacros"|color="trigger" };
+   ROUTINE OnPlane (CONST type : PLANETYPE; CONST pos : REAL; OPTIONAL CONST timeMs : DINT) { macro="60_TechnologyOptions.610_Trigger@6103"|enable="ROOT.MacroTrigger.enable_OnPlane"|color="trigger"|teachmember="pos" };
+   ROUTINE OnPosition (OPTIONAL CONST param : PERCENT) { macro="60_TechnologyOptions.610_Trigger@6104"|enable="ROOT.MacroTrigger.enable_OnPosition"|color="trigger" };
+   ROUTINE SetJointMonitoringLimits (CONST limits : JOINTMONITORINGLIMITS; OPTIONAL CONST activate : BOOL) : BOOL { macro="20_Settings@251"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailable" };
+   ROUTINE SetGuardMonitoringLimits (CONST limits : GUARDMONITORINGLIMITS; OPTIONAL CONST activate : BOOL) : BOOL { macro="20_Settings@252"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailableCart" };
+   ROUTINE SetMaxVelocity (joints : JOINTVECTOR; cart : REAL; turn : REAL) : BOOL { macro="20_Settings@253"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailableDebug" };
+   ROUTINE PTPSearch (CONST targetPos : POSITION_; CONST triggerSignal : ANY; OPTIONAL CONST dyn : DYNAMIC; OPTIONAL CONST trigger : EDGETYPE; OPTIONAL triggeredPos : POSITION_; OPTIONAL CONST stopRobot : BOOL; OPTIONAL CONST stopMode : STOPMODE) : BOOL { macro="10_Movement@1061"|color="movement"|enable="PROGRAM.enable_PTPSearch" };
+   ROUTINE LinSearch (CONST targetPos : POSITION_; CONST triggerSignal : ANY; OPTIONAL CONST dyn : DYNAMIC; OPTIONAL CONST trigger : EDGETYPE; OPTIONAL triggeredPos : POSITION_; OPTIONAL CONST stopRobot : BOOL; OPTIONAL CONST stopMode : STOPMODE) : BOOL { macro="10_Movement@1062"|color="movement"|enable="PROGRAM.enable_LinSearch" };
+   ROUTINE LinCirc (CONST startPos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; CONST circPos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; OPTIONAL CONST dyn : DYNAMIC_; OPTIONAL CONST ovl : OVERLAP_) { macro="10_Movement@1032"|enable="ROOT.RcData.enableCartMacrosDbg"|color="movement" };
+   ROUTINE PTPCirc (CONST startPos : POSITION_ { default_var="ROOT.MacroKinematic.default_AxisPos" }; CONST circPos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; CONST pos : POSITION_ { default_var="ROOT.MacroKinematic.default_CartPos" }; OPTIONAL CONST dyn : DYNAMIC_; OPTIONAL CONST ovl : OVERLAP_) { macro="10_Movement@1031"|enable="ROOT.RcData.enableCartMacrosDbg"|color="movement" };
+   ROUTINE MoveCartAxis (CONST cartComp : CARTAXIS; CONST pos : REAL; OPTIONAL CONST dyn : DYNAMIC_; OPTIONAL CONST ovl : OVERLAP_) { macro="10_Movement@1052"|enable="ROOT.RcData.enableCartMacrosDbg"|color="movement" };
+   ROUTINE MoveRobotAxis (CONST axis : ROBOTAXIS; CONST pos : REAL; OPTIONAL CONST dyn : DYNAMIC_; OPTIONAL CONST ovl : OVERLAP_) { macro="10_Movement@1051"|enable="ROOT.MacroKinematic.enable_MoveRobotAxis"|color="movement" };
+   ROUTINE SetAxisFilter (timeConstant : REAL) : BOOL { macro="20_Settings@281"|enable="ROOT.gRcDebugMode" };
+   ROUTINE PosHasSpaceViolation (pos : POSITION_) : BOOL { macro="60_TechnologyOptions.620_WorkspaceMonitoring@6203"|enable="ROOT.gRcSelectedRobotData.cartAvailable" };
+   ROUTINE DynamicAxis (CONST axis : ROBOTAXIS { nowarn_hidden }; OPTIONAL CONST vel : PERCENT { init="100"|nowarn_hidden }; OPTIONAL CONST acc : PERCENT { init="100"|nowarn_hidden }; OPTIONAL CONST dec : PERCENT { init="100"|nowarn_hidden }; OPTIONAL CONST jrk : PERCENT { init="100"|nowarn_hidden }) { macro="20_Settings@2011"|color="movement"|xmlmask="XML.mask.macro.dynamicAxis"|enable="ROOT.MacroDynamicAxis.enable_DynamicAxis"|xmlmaskvar="ROOT.MacroDynamicAxis.axis;ROOT.MacroDynamicAxis.vel;ROOT.MacroDynamicAxis.acc;ROOT.MacroDynamicAxis.dec;ROOT.MacroDynamicAxis.jrk" };
+   ROUTINE ResetPallet (CONST PalletID : PALLET_; OPTIONAL CONST count : DINT { init="0"|nowarn_hidden }) { macro="20_Settings@215"|color="peripherie"|xmlmask="XML.mask.macro.resetPallet"|enable="ROOT.MacroResetPallet.enable_ResetPallet"|xmlmaskvar="ROOT.MacroResetPallet.PalletID;ROOT.MacroResetPallet.count" };
+   ROUTINE Debug (CONST type : ANY) { macro="30_Systemfunctions@3090"|do_allowed|color="peripherie"|enable="ROOT.gRcDebugMode" };
+   ROUTINE TestDebugError (CONST component : DINT; CONST error : DINT) { macro="30_Systemfunctions@3091"|do_allowed|color="peripherie"|enable="ROOT.gRcDebugMode" };
+   ROUTINE Print (VAR_IN text : STRING) { macro="30_Systemfunctions@308"|do_allowed|color="peripherie"|enable="ROOT.gRcDebugMode" };
+   ROUTINE PrintX (CONST text : STRING; OPTIONAL CONST param1 : ANY; OPTIONAL CONST param2 : ANY; OPTIONAL CONST param3 : ANY; OPTIONAL CONST param4 : ANY) { macro="30_Systemfunctions@309"|do_allowed|color="peripherie"|enable="ROOT.gRcDebugMode" };
+   ROUTINE IMMCommand (CONST command : IMMCOMMAND { nowarn_hidden }) { macro="25_IOControl@105"|color="peripherie"|xmlmask="XML.mask.macro.immCommand"|enable="ROOT.MacroIMMCommand.enable_IMMCommand"|xmlmaskvar="ROOT.MacroIMMCommand.command" };
+   ROUTINE ServiceProgram () : BOOL { macro="20_Settings@291"|color="peripherie"|enable="ROOT.gRcEnableServiceRoutines" };
+   ROUTINE Sleep (CONST time : DINT);
+
+END_GLOBAL
+
+BLOCK AXISPOS_ ABSTRACT INHERIT POSITION_ { no_var }
+
+END_BLOCK
+
+BLOCK CARTFRAME { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="cf"|category="10_Positions"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      x : LREAL;
+      y : LREAL;
+      z : LREAL;
+      a : LREAL;
+      b : LREAL;
+      c : LREAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTPOS_ ABSTRACT INHERIT POSITION_ { no_var }
+
+END_BLOCK
+
+BLOCK DISTANCE_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK DYNAMIC_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK OVERLAP_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK POSITION_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK REFSYS_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK TOOLORWORKPIECE_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK TOOL_ ABSTRACT INHERIT TOOLORWORKPIECE_ { no_var }
+
+END_BLOCK
+
+BLOCK TRcCoDeSysRobot ABSTRACT INHERIT TRcRobot
+
+END_BLOCK
+
+BLOCK TRcDataRobot { no_var }
+
+   // Variables
+   VAR
+      chosenTool : MAPTO TOOLORWORKPIECE_ CONST NOINIT { showref };
+      chosenRefSys : MAPTO REFSYS_ NOINIT { showref|show_instance="readyToUse" };
+      programTool : MAPTO TOOLORWORKPIECE_ CONST NOINIT { showref };
+      programRefSys : MAPTO REFSYS_ CONST NOINIT { showref|show_instance="readyToUse" };
+      driveData : MAPTO TRcDrivesDataSet CONST PRIVATE;
+   END_VAR
+
+END_BLOCK
+
+BLOCK TRcRobot ABSTRACT
+
+END_BLOCK
+
+BLOCK AXISPOSREF INHERIT AXISPOS_ { no_var|category="10_Positions"|hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      a1 : MAPTO REAL { nowarn_unsafe };
+      a2 : MAPTO REAL { nowarn_unsafe };
+      a3 : MAPTO REAL { nowarn_unsafe };
+      a4 : MAPTO REAL { nowarn_unsafe };
+      a5 : MAPTO REAL { nowarn_unsafe };
+      a6 : MAPTO REAL { nowarn_unsafe };
+      a7 : MAPTO REAL { nowarn_unsafe };
+      a8 : MAPTO REAL { nowarn_unsafe };
+      aux1 : MAPTO REAL { nowarn_unsafe };
+      aux2 : MAPTO REAL { nowarn_unsafe };
+      aux3 : MAPTO REAL { nowarn_unsafe };
+      aux4 : MAPTO REAL { nowarn_unsafe };
+      aux5 : MAPTO REAL { nowarn_unsafe };
+      aux6 : MAPTO REAL { nowarn_unsafe };
+   END_VAR
+
+END_BLOCK
+
+BLOCK AXISPOSSTATIC INHERIT AXISPOS_ { no_var|category="10_Positions"|hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      a1 : REAL;
+      a2 : REAL;
+      a3 : REAL;
+      a4 : REAL;
+      a5 : REAL;
+      a6 : REAL;
+      a7 : REAL;
+      a8 : REAL;
+      aux1 : REAL;
+      aux2 : REAL;
+      aux3 : REAL;
+      aux4 : REAL;
+      aux5 : REAL;
+      aux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTFRAMEREF { no_var|category="10_Positions"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      x : MAPTO LREAL CONST;
+      y : MAPTO LREAL CONST;
+      z : MAPTO LREAL CONST;
+      a : MAPTO LREAL CONST;
+      b : MAPTO LREAL CONST;
+      c : MAPTO LREAL CONST;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTPOSREF INHERIT CARTPOS_ { no_var|category="10_Positions"|hide="x,y,z,a,b,c,p1,p2,mode,aux1,aux2,aux3,aux4,aux5,aux6,p1Type,p2Type;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      x : MAPTO REAL READONLY;
+      y : MAPTO REAL READONLY;
+      z : MAPTO REAL READONLY;
+      a : MAPTO REAL READONLY;
+      b : MAPTO REAL READONLY;
+      c : MAPTO REAL READONLY;
+      p1 : MAPTO REAL READONLY;
+      p2 : MAPTO REAL READONLY;
+      p1Type : MAPTO POSTYPE READONLY;
+      p2Type : MAPTO POSTYPE READONLY;
+      mode : MAPTO DINT READONLY;
+      aux1 : MAPTO REAL READONLY;
+      aux2 : MAPTO REAL READONLY;
+      aux3 : MAPTO REAL READONLY;
+      aux4 : MAPTO REAL READONLY;
+      aux5 : MAPTO REAL READONLY;
+      aux6 : MAPTO REAL READONLY;
+   END_VAR
+
+END_BLOCK
+
+BLOCK FLANGETOOL INHERIT TOOL_ { no_var|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.cartAvailable" }
+
+END_BLOCK
+
+BLOCK GANTRYAXISOBJECT { no_var|category="50_System_and_Technology"|hide="SELF.IAmHidden()" }
+
+END_BLOCK
+
+BLOCK REFSYS1DVARITF { no_var|category="30_Reference_Systems_and_Tools" }
+
+END_BLOCK
+
+BLOCK REFSYSSTATIC INHERIT REFSYS_ { no_var|category="30_Reference_Systems_and_Tools" }
+
+   // Variables
+   VAR
+      x : REAL READONLY;
+      y : REAL READONLY;
+      z : REAL READONLY;
+      a : REAL READONLY;
+      b : REAL READONLY;
+      c : REAL READONLY;
+   END_VAR
+
+END_BLOCK
+
+BLOCK ROBOT INHERIT TRcCoDeSysRobot { no_var|category="50_System_and_Technology" }
+
+END_BLOCK
+
+BLOCK ROBOTDATA { no_var|category="50_System_and_Technology"|macro="20_Settings@2099"|hide="axisSetPos,cartSetPos,isReferenced,axisIsReferenced,addPosMode;SELF.hiddenElems"|exportcomponent="name;index;isOnPathEnd" }
+
+   // Variables
+   VAR
+      name : STRING READONLY NOINIT;
+      index : DINT READONLY NOINIT := -1;
+      axisSetPos : AXISPOSREF READONLY NOINIT;
+      axisPosMin : AXISPOSSTATIC READONLY NOINIT;
+      axisPosMax : AXISPOSSTATIC READONLY NOINIT;
+      nrOfBaseJoints : DINT READONLY NOINIT;
+      nrOfMainJoints : DINT READONLY NOINIT;
+      nrOfAuxJoints : DINT READONLY NOINIT;
+      cartSetPos : CARTPOSREF READONLY NOINIT;
+      addPosMode : POSTYPE NOINIT;
+      isOnPathEnd : BOOL READONLY NOINIT;
+      isStopped : BOOL READONLY NOINIT;
+      isReferenced : BOOL READONLY NOINIT;
+      axisIsReferenced : ARRAY [1..16] OF BOOL READONLY NOINIT { hide="[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16];ROOT.RcData.hiddenElements.axes" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK ROBOTPORT { no_var|category="50_System_and_Technology"|hide="TRUE" }
+
+END_BLOCK
+
+BLOCK ROBOTSTATE { no_var|category="50_System_and_Technology"|hide="TRUE"|message="Replaced by machine-variable <RobotData>" }
+
+   // Variables
+   VAR
+      port : MAPTO ROBOTPORT { showref };
+      axisSetPos : AXISPOSREF READONLY NOINIT;
+      cartSetPos : CARTPOSREF READONLY NOINIT;
+      isReferenced : BOOL READONLY NOINIT;
+      axisIsReferenced : ARRAY [1..16] OF BOOL READONLY NOINIT { hide="[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16];ROOT.RcData.hiddenElements.axes" };
+      nrOfAxis : DINT READONLY NOINIT;
+      nrOfMainAxis : DINT READONLY NOINIT;
+      nrOfAuxAxis : DINT READONLY NOINIT;
+      isValid : BOOL READONLY NOINIT;
+      mapTarget : STRING PRIVATE;
+   END_VAR
+
+END_BLOCK
+
+BLOCK TOOLSTATIC INHERIT TOOL_ { no_var|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.cartAvailable"|hide="m,CGx,CGy,CGz,Jxx,Jyy,Jzz,Jxy,Jxz,Jyz,guard;SELF.GetHiddenElems()" }
+
+   // Variables
+   VAR
+      x : REAL READONLY;
+      y : REAL READONLY;
+      z : REAL READONLY;
+      a : REAL READONLY;
+      b : REAL READONLY;
+      c : REAL READONLY;
+      m : REAL READONLY;
+      CGx : REAL READONLY;
+      CGy : REAL READONLY;
+      CGz : REAL READONLY;
+      Jxx : REAL READONLY;
+      Jyy : REAL READONLY;
+      Jzz : REAL READONLY;
+      Jxy : REAL READONLY;
+      Jxz : REAL READONLY;
+      Jyz : REAL READONLY;
+      guard : GUARD READONLY := (vector := ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ()));
+   END_VAR
+
+END_BLOCK
+
+BLOCK WORLDREFSYS INHERIT REFSYS_ { no_var|category="30_Reference_Systems_and_Tools" }
+
+END_BLOCK
+
+BLOCK TCITFOBJECT { no_var }
+
+   // Variables
+   VAR
+      dataMapped : MAPTO BOOL CONST NOINIT;
+      itfActive : MAPTO BOOL CONST NOINIT;
+   END_VAR
+
+   // Routines
+   ROUTINE Request (CONST requestId : DINT; OPTIONAL CONST index : DINT; OPTIONAL CONST attribute : DWORD; OPTIONAL CONST timeoutMS : DINT) : DINT { macro="30_Systemfunctions.340_IECDataInterface@3401"|color="peripherie"|enable="ROOT.MacroSystem.enable_TCITFRequest" };
+   ROUTINE StartRequestAsync (CONST requestId : DINT; OPTIONAL CONST index : DINT; OPTIONAL CONST attribute : DWORD) { macro="30_Systemfunctions.340_IECDataInterface@3402"|color="peripherie"|enable="ROOT.MacroSystem.enable_TCITFStartRequestAsync" };
+   ROUTINE WaitRequestFinished (OPTIONAL CONST timeoutMS : DINT) : DINT { macro="30_Systemfunctions.340_IECDataInterface@3403"|color="peripherie"|enable="ROOT.MacroSystem.enable_TCITFWaitRequestFinished" };
+   ROUTINE Lock (OPTIONAL CONST timeoutMS : DINT) : BOOL { macro="30_Systemfunctions.340_IECDataInterface@3404"|color="peripherie"|enable="ROOT.MacroSystem.enable_TCITFLock" };
+   ROUTINE Unlock () { macro="30_Systemfunctions.340_IECDataInterface@3405"|color="peripherie"|enable="ROOT.MacroSystem.enable_TCITFUnlock" };
+
+END_BLOCK
+
+BLOCK GUARDMONITORINGLIMITS { no_var="ROOT.gRcSelectedRobotData.noDynMonCartAvailable"|prefix="cLim"|category="20_Dynamics_and_Overlaps"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailableCart"|reuse }
+
+   // Variables
+   VAR
+      cartLimits : CARTDYNAMICLIMITS;
+      guards : DYNGUARDS;
+      initialActive : BOOL READONLY;
+   END_VAR
+
+END_BLOCK
+
+BLOCK JOINTMONITORINGLIMITS { no_var="ROOT.gRcSelectedRobotData.noDynMonAvailable"|prefix="jLim"|category="20_Dynamics_and_Overlaps"|enable="ROOT.gRcSelectedRobotData.dynMonitoringAvailable"|reuse }
+
+   // Variables
+   VAR
+      jointLimits : JOINTVECTOR;
+      initialActive : BOOL READONLY;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTREFSYSAXIS INHERIT REFSYS_ { no_var="ROOT.gRcSelectedRobotData.noExtChainedAvailable"|prefix="crsa"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.extChainedAvailable" }
+
+   // Variables
+   VAR
+      axis : ROBOTAXIS := A1 { hide="A1,A2,A3,A4,A5,A6,A7,A8,Aux1,Aux2,Aux3,Aux4,Aux5,Aux6;ROOT.RcData.hiddenElements.externalAxes" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTREFSYS1DVAR INHERIT CARTREFSYS_ { prefix="brsv"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.cartAvailable"|no_var }
+
+END_BLOCK
+
+BLOCK EXTERNALTCP INHERIT CARTREFSYS { no_var="ROOT.gRcSelectedRobotData.noExtTCPAvailable"|prefix="tcp"|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.extTCPAvailable"|default|reuse|xmlmask="refsys.mask.refsysControl"|xmlmaskvar="ROOT.RefSysMask.chosenRefSys" }
+
+END_BLOCK
+
+BLOCK PATHCORRECTIONVAR INHERIT CARTREFSYSVAR { no_var="ROOT.MacroPathTracking.hide_PathCorrectionVar"|prefix="offset"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.MacroPathTracking.enablePathTracking"|hide="baseRefSys,x,y,z,a,b,c;SELF.hidePlcData" }
+
+END_BLOCK
+
+BLOCK CARTREFSYS INHERIT CARTREFSYS_ { no_var="ROOT.MacroKinematic.hide_RefSys"|prefix="crs"|category="30_Reference_Systems_and_Tools"|enable="ROOT.MacroKinematic.enable_RefSys"|default|reuse|xmlmask="refsys.mask.refsysControl"|xmlmaskvar="ROOT.RefSysMask.chosenRefSys" }
+
+   // Variables
+   VAR
+      x : REAL;
+      y : REAL;
+      z : REAL;
+      a : REAL;
+      b : REAL;
+      c : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTREFSYSVAR INHERIT CARTREFSYS_ { no_var="ROOT.MacroKinematic.hide_VarRefSys"|prefix="crsv"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.MacroKinematic.enable_VarRefSys"|hide="x,y,z,a,b,c;SELF.hidePlcData" }
+
+   // Variables
+   VAR
+      itfActive : BOOL READONLY NOINIT;
+      x : MAPTO REAL CONST NOINIT;
+      y : MAPTO REAL CONST NOINIT;
+      z : MAPTO REAL CONST NOINIT;
+      a : MAPTO REAL CONST NOINIT;
+      b : MAPTO REAL CONST NOINIT;
+      c : MAPTO REAL CONST NOINIT;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTREFSYS_ ABSTRACT INHERIT REFSYS_ { no_var }
+
+   // Variables
+   VAR
+      baseRefSys : MAPTO REFSYS_ { showref|nowarn_unsafe };
+   END_VAR
+
+END_BLOCK
+
+BLOCK WORKPIECE INHERIT TOOLORWORKPIECE_ { no_var="ROOT.MacroKinematic.hide_Workpiece"|prefix="workpiece"|category="30_Reference_Systems_and_Tools"|macro="60_TechnologyOptions.620_WorkspaceMonitoring@6209"|hide="m,CGx,CGy,CGz,Jxx,Jyy,Jzz,Jxy,Jxz,Jyz,guard;SELF.GetHiddenElems()"|enable="ROOT.MacroKinematic.enable_Workpiece"|exportcomponent="guard" }
+
+   // Variables
+   VAR
+      x : REAL;
+      y : REAL;
+      z : REAL;
+      a : REAL;
+      b : REAL;
+      c : REAL;
+      m : REAL;
+      CGx : REAL;
+      CGy : REAL;
+      CGz : REAL;
+      Jxx : REAL;
+      Jyy : REAL;
+      Jzz : REAL;
+      Jxy : REAL;
+      Jxz : REAL;
+      Jyz : REAL;
+      guard : GUARD := (vector := ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ()));
+   END_VAR
+
+   // Routines
+   ROUTINE GuardEnable (CONST enable : BOOL);
+
+END_BLOCK
+
+BLOCK EJECTOR { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      isForward : BOOL READONLY NOINIT { hide="SELF.EMInstance.ejectorSignals.isForward.isNotAvailable" };
+      isBack : BOOL READONLY NOINIT { hide="SELF.EMInstance.ejectorSignals.isBack.isNotAvailable" };
+      enableForward : MAPTO BOOL NOINIT { hide="SELF.EMInstance.ejectorSignals.enableForward.isNotAvailable" };
+      enableBack : MAPTO BOOL NOINIT { hide="SELF.EMInstance.ejectorSignals.enableBack.isNotAvailable" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK COREPULLER1 { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      isIn : BOOL READONLY NOINIT { hide="SELF.EMInstance.corePuller1Signals.isIn.isNotAvailable" };
+      isOut : BOOL READONLY NOINIT { hide="SELF.EMInstance.corePuller1Signals.isOut.isNotAvailable" };
+      enableIn : MAPTO BOOL NOINIT { hide="SELF.EMInstance.corePuller1Signals.enableIn.isNotAvailable" };
+      enableOut : MAPTO BOOL NOINIT { hide="SELF.EMInstance.corePuller1Signals.enableOut.isNotAvailable" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK CONTROL { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      isRejectPiece : BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.isRejectPiece.isNotAvailable" };
+      robotIsEnabled : BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.robotIsEnabled.isNotAvailable" };
+      pieceIsAvailable : BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.pieceIsAvailable.isNotAvailable" };
+      newPartAvailable : BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.newPartAvailable.isNotAvailable" };
+      softMoldAreaFree : MAPTO BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.softMoldAreaFree.isNotAvailable" };
+      robotOperationMode : MAPTO BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.robotOperationMode.isNotAvailable" };
+      zoneSwitchFBAreaFree : BOOL READONLY NOINIT { hide="SELF.EMInstance.controlSignals.zoneSwitchFBAreaFree.isNotAvailable" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK EUROMAP { no_var="ROOT.RcEuromap.hide_EM"|prefix="EM"|category="50_System_and_Technology"|macro="60_TechnologyOptions.650_Euromap"|xmlmask="euromap.mask.state"|xmlmaskvar="ROOT.XMLControlEuromap.chosenEUROMAP"|enable="ROOT.RcEuromap.emInstanceAvailable"|hide="SELF.hide"|exportcomponent="moldArea;activateMoldClosureArea" }
+
+   // Variables
+   VAR
+      mold : MOLD NOINIT := () { hide="SELF.mold.noMoldSignalsAvailable" };
+      ejector : EJECTOR NOINIT := () { hide="SELF.ejector.noEjectorSignalsAvailable" };
+      corePuller1 : COREPULLER1 NOINIT := () { hide="SELF.corePuller1.noCorePuller1SignalsAvailable" };
+      corePuller2 : COREPULLER2 NOINIT := () { hide="SELF.corePuller2.noCorePuller2SignalsAvailable" };
+      control : CONTROL NOINIT := () { hide="SELF.control.noControlSignalsAvailable" };
+      moldArea : AREA READONLY NOINIT := (areaType := BLOCKEDAREA, startPos := (), visibleDimensions := (, , ), moveSmoothly := (, , , , , , , , , , , , , , , ), workingTime_s := (, , , , , , , , , , , , , , , ), smoothnessFactor := (, , , , , , , , , , , , , , , ), cartDynMonitoring := (), jointDynMonitoring := ()) { hide="SELF.hide" };
+      activateMoldClosureArea : BOOL READONLY NOINIT;
+      allowEnterMoldClosureArea : BOOL READONLY NOINIT;
+      moldActive : BOOL NOINIT;
+   END_VAR
+
+   // Routines
+   ROUTINE WaitEnterMold () { macro="60_TechnologyOptions.650_Euromap.6510_Mold"|color="peripherie"|enable="ROOT.RcEuromap.MacroWaitEnterMold_show" };
+   ROUTINE WaitEnterMoldMid () { macro="60_TechnologyOptions.650_Euromap.6510_Mold"|color="peripherie"|enable="ROOT.RcEuromap.MacroWaitEnterMoldMid_show" };
+   ROUTINE OpenMold () { macro="60_TechnologyOptions.650_Euromap.6510_Mold"|color="peripherie"|enable="ROOT.RcEuromap.MacroOpenMold_show"|do_allowed };
+   ROUTINE OpenMoldMid () { macro="60_TechnologyOptions.650_Euromap.6510_Mold"|color="peripherie"|enable="ROOT.RcEuromap.MacroOpenMoldMid_show"|do_allowed };
+   ROUTINE CloseMold () { macro="60_TechnologyOptions.650_Euromap.6510_Mold"|color="peripherie"|enable="ROOT.RcEuromap.MacroCloseMold_show"|do_allowed };
+   ROUTINE EjectorForward () { macro="60_TechnologyOptions.650_Euromap.6520_Ejector"|color="peripherie"|enable="ROOT.RcEuromap.MacroEjectorForward_show"|do_allowed };
+   ROUTINE EjectorBackward () { macro="60_TechnologyOptions.650_Euromap.6520_Ejector"|color="peripherie"|enable="ROOT.RcEuromap.MacroEjectorBackward_show"|do_allowed };
+   ROUTINE CP1ToInject () { macro="60_TechnologyOptions.650_Euromap.6530_CorePuller1"|color="peripherie"|enable="ROOT.RcEuromap.MacroCP1ToInject_show"|do_allowed };
+   ROUTINE CP1ToRemoveMold () { macro="60_TechnologyOptions.650_Euromap.6530_CorePuller1"|color="peripherie"|enable="ROOT.RcEuromap.MacroCP1ToRemoveMold_show"|do_allowed };
+   ROUTINE CP2ToInject () { macro="60_TechnologyOptions.650_Euromap.6540_CorePuller2"|color="peripherie"|enable="ROOT.RcEuromap.MacroCP2ToInject_show"|do_allowed };
+   ROUTINE CP2ToRemoveMold () { macro="60_TechnologyOptions.650_Euromap.6540_CorePuller2"|color="peripherie"|enable="ROOT.RcEuromap.MacroCP2ToRemoveMold_show"|do_allowed };
+   ROUTINE PrepareMoldToInject () { macro="60_TechnologyOptions.650_Euromap.6560_Special"|color="peripherie"|enable="ROOT.RcEuromap.MacroPrepareMoldToInject_show"|do_allowed };
+   ROUTINE WaitMoldCycles (CONST number : DINT) { macro="60_TechnologyOptions.650_Euromap.6560_Special"|color="peripherie"|enable="ROOT.RcEuromap.MacroWaitMoldCycles_show" };
+   ROUTINE StartMachine (OPTIONAL CONST timeoutSec : REAL) { macro="60_TechnologyOptions.650_Euromap.6560_Special"|color="peripherie"|enable="ROOT.RcEuromap.MacroStartMachine_show" };
+   ROUTINE CheckZoneSwitch (CONST robotInMoldArea : BOOL) { macro="60_TechnologyOptions.650_Euromap.6560_Special"|color="peripherie"|enable="ROOT.RcEuromap.MacroCheckZoneSwitch_show" };
+   ROUTINE RobotIsInMoldArea () : BOOL { macro="60_TechnologyOptions.650_Euromap.6560_Special"|color="peripherie"|enable="ROOT.RcEuromap.MacroRobotIsInMoldArea_show" };
+
+END_BLOCK
+
+BLOCK MOLD { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      isOpen : BOOL READONLY NOINIT { hide="SELF.EMInstance.moldSignals.isOpen.isNotAvailable" };
+      isIntermediateMoldOpen : BOOL READONLY NOINIT { hide="SELF.EMInstance.moldSignals.isIntermediateMoldOpen.isNotAvailable" };
+      isClosed : BOOL READONLY NOINIT { hide="SELF.EMInstance.moldSignals.isClosed.isNotAvailable" };
+      enableFullMoldOpen : MAPTO BOOL NOINIT { hide="SELF.EMInstance.moldSignals.enableFullMoldOpen.isNotAvailable" };
+      enableClose : MAPTO BOOL NOINIT { hide="SELF.EMInstance.moldSignals.enableClose.isNotAvailable" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK COREPULLER2 { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      isIn : BOOL READONLY NOINIT { hide="SELF.EMInstance.corePuller2Signals.isIn.isNotAvailable" };
+      isOut : BOOL READONLY NOINIT { hide="SELF.EMInstance.corePuller2Signals.isOut.isNotAvailable" };
+      enableIn : MAPTO BOOL NOINIT { hide="SELF.EMInstance.corePuller2Signals.enableIn.isNotAvailable" };
+      enableOut : MAPTO BOOL NOINIT { hide="SELF.EMInstance.corePuller2Signals.enableOut.isNotAvailable" };
+   END_VAR
+
+END_BLOCK
+
+BLOCK MOLDDATA { no_var|category="50_System_and_Technology" }
+
+   // Variables
+   VAR
+      moldClosureAreaOrigin : ARRAY [0..2] OF REAL PRIVATE;
+      moldClosureAreaEnd : ARRAY [0..2] OF REAL PRIVATE;
+      moldClosureAreaPlane : DINT PRIVATE;
+      entryDirection : DINT := -1 PRIVATE;
+      immAreaOrigin : ARRAY [0..2] OF REAL PRIVATE;
+      immAreaEnd : ARRAY [0..2] OF REAL PRIVATE;
+      addImmAreaXMin : REAL PRIVATE;
+      addImmAreaXMax : REAL PRIVATE;
+      useAddImmArea : BOOL PRIVATE;
+      teachPoint1 : ARRAY [0..2] OF REAL PRIVATE;
+      teachPoint2 : ARRAY [0..2] OF REAL PRIVATE;
+      teachPointHeight : ARRAY [0..2] OF REAL PRIVATE;
+      teachPointDir : ARRAY [0..2] OF REAL PRIVATE;
+   END_VAR
+
+END_BLOCK
+
+BLOCK BOOLSIGOUT INHERIT SIGNAL_ { no_var="ROOT.MacroSignals.hide_BOOLSIGOUT"|prefix="bSigOut"|category="45_Signals"|macro="55_Signals@5592"|do_allowed|enable="ROOT.MacroSignals.enable_BOOLSIGOUT" }
+
+   // Variables
+   VAR
+      signal : MAPTO BOOL { showref|noexpand|hide="ROOT.MacroSignals.hide_MapTargets" };
+      val : MAPTO BOOL NOINIT;
+   END_VAR
+
+   // Routines
+   ROUTINE Set (OPTIONAL VAR_IN value : BOOL; OPTIONAL CONST fbSignal : BOOL { var_only }; OPTIONAL VAR_IN fbTimeoutMs : DINT; OPTIONAL VAR_IN waitOnFeedback : BOOL) { color="peripherie" };
+   ROUTINE Pulse (VAR_IN pulseLengthMs : DINT; OPTIONAL VAR_IN pulseValue : BOOL; OPTIONAL VAR_IN pauseAtInterrupt : BOOL) { color="peripherie" };
+   ROUTINE Connect (VAR_IN status : STATECONNECTION) { color="peripherie" };
+
+END_BLOCK
+
+BLOCK IBOOLSIGNAL INTERFACE { no_var }
+
+END_BLOCK
+
+BLOCK SIGNAL_ ABSTRACT { no_var }
+
+END_BLOCK
+
+BLOCK BOOLSIGIN INHERIT SIGNAL_ { no_var="ROOT.MacroSignals.hide_BOOLSIGIN"|prefix="bSigIn"|category="45_Signals"|macro="55_Signals@5591"|do_allowed|enable="ROOT.MacroSignals.enable_BOOLSIGIN" }
+
+   // Variables
+   VAR
+      signal : MAPTO BOOL { showref|noexpand|hide="ROOT.MacroSignals.hide_MapTargets" };
+      val : MAPTO BOOL CONST NOINIT;
+      posEdge : BOOL NOINIT;
+      negEdge : BOOL NOINIT;
+   END_VAR
+
+END_BLOCK
+
+BLOCK OVLSUPPOS INHERIT OVERLAP_ { no_var="ROOT.MacroKinematic.hide_OvlSupPos"|prefix="os"|category="20_Dynamics_and_Overlaps"|reuse }
+
+   // Variables
+   VAR
+      ovl : PERC200 := 200;
+   END_VAR
+
+END_BLOCK
+
+BLOCK OVLREL INHERIT OVERLAP_ { no_var="ROOT.MacroKinematic.hide_OvlRel"|prefix="or"|category="20_Dynamics_and_Overlaps"|default|reuse }
+
+   // Variables
+   VAR
+      ovl : PERC200 := 100;
+   END_VAR
+
+END_BLOCK
+
+BLOCK OVLABS INHERIT OVERLAP_ { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="oa"|category="20_Dynamics_and_Overlaps"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable"|reuse }
+
+   // Variables
+   VAR
+      posDist : REAL := 0;
+      oriDist : REAL := 360;
+      linAxDist : REAL := 10000;
+      rotAxDist : REAL := 360;
+      vConst : BOOL := FALSE;
+   END_VAR
+
+END_BLOCK
+
+BLOCK TOOLVAR INHERIT TOOL_ { no_var="ROOT.MacroKinematic.hide_VarTool"|prefix="tv"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.MacroKinematic.enable_VarTool"|hide="x,y,z,a,b,c;SELF.hidePlcData" }
+
+   // Variables
+   VAR
+      baseTool : MAPTO TOOL_ CONST { showref };
+      itfActive : BOOL READONLY NOINIT;
+      x : MAPTO REAL CONST NOINIT;
+      y : MAPTO REAL CONST NOINIT;
+      z : MAPTO REAL CONST NOINIT;
+      a : MAPTO REAL CONST NOINIT;
+      b : MAPTO REAL CONST NOINIT;
+      c : MAPTO REAL CONST NOINIT;
+   END_VAR
+
+END_BLOCK
+
+BLOCK TOOL INHERIT TOOL_ { no_var="ROOT.MacroKinematic.hide_Tool"|prefix="t"|category="30_Reference_Systems_and_Tools"|enable="ROOT.MacroKinematic.enable_Tool"|default|reuse|hide="m,CGx,CGy,CGz,Jxx,Jyy,Jzz,Jxy,Jxz,Jyz,guard;SELF.GetHiddenElems()"|exportcomponent="guard"|xmlmask="teachTool.mask.teachToolControl"|xmlmaskvar="ROOT.TeachToolMask.chosenTool" }
+
+   // Variables
+   VAR
+      x : REAL;
+      y : REAL;
+      z : REAL;
+      a : REAL;
+      b : REAL;
+      c : REAL;
+      m : REAL;
+      CGx : REAL;
+      CGy : REAL;
+      CGz : REAL;
+      Jxx : REAL;
+      Jyy : REAL;
+      Jzz : REAL;
+      Jxy : REAL;
+      Jxz : REAL;
+      Jyz : REAL;
+      guard : GUARD := (vector := ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ()));
+   END_VAR
+
+END_BLOCK
+
+BLOCK TOOLAXIS INHERIT TOOL_ { no_var="ROOT.gRcSelectedRobotData.noExtChainedAvailable"|prefix="ta"|reuse|category="30_Reference_Systems_and_Tools"|enable="ROOT.gRcSelectedRobotData.extChainedAvailable" }
+
+   // Variables
+   VAR
+      axis : ROBOTAXIS := A1 { hide="A1,A2,A3,A4,A5,A6,A7,A8,Aux1,Aux2,Aux3,Aux4,Aux5,Aux6;ROOT.RcData.hiddenElements.externalAxes" };
+      guard : GUARD := (vector := ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ()));
+   END_VAR
+
+END_BLOCK
+
+BLOCK PALLET_ ABSTRACT { no_var }
+
+   // Variables
+   VAR
+      actParts : DINT NOINIT;
+      maxParts : DINT READONLY NOINIT;
+      isEmpty : BOOL READONLY NOINIT;
+      isFull : BOOL READONLY NOINIT;
+   END_VAR
+
+   // Routines
+   ROUTINE ToPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_);
+   ROUTINE FromPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_);
+   ROUTINE ToGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_);
+   ROUTINE FromGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_);
+   ROUTINE Reset (OPTIONAL CONST newNumber : DINT);
+
+END_BLOCK
+
+BLOCK JOINTPALLET INHERIT PALLET_ { no_var="ROOT.JointPalletMask.hideJointPallet"|prefix="pal"|default|reuse|xmlmask="jointpallet.mask.overview"|xmlmaskvar="ROOT.JointPalletMask.chosenPallet"|category="50_System_and_Technology"|macro="60_TechnologyOptions.640_Palletizing@6401"|enable="ROOT.gRcSelectedRobotData.jointPalletAvailable" }
+
+   // Variables
+   VAR
+      palletDir : ARRAY [0..2] OF TJointPalletDirection;
+      placementDir : TJointPalletDirection := Pal_dir_Invalid;
+      numberOfParts : ARRAY [0..2] OF TPalletNrOfParts := (1, 1, 1);
+      distanceOfParts : ARRAY [0..2] OF REAL;
+      firstPartOnPalletPos : AXISPOS;
+      palletEntryPointUsed : BOOL;
+      palletEntryPoint : AXISPOS;
+      prePlaceOptions : TPrePostPlace;
+      postPlaceOptions : TPrePostPlace;
+      palletReady : MAPTO BOOL READONLY { showref };
+      palletFull : MAPTO BOOL { showref };
+   END_VAR
+
+   // Routines
+   ROUTINE ToPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_) { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE FromPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_) { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE ToGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_) { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE FromGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_) { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE Reset (OPTIONAL CONST newCount : DINT) { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE GetNextTargetPos (pos : AXISPOS) : BOOL { enable="ROOT.JointPalletMask.showMacros" };
+   ROUTINE GetPrevTargetPos (pos : AXISPOS) : BOOL { enable="ROOT.JointPalletMask.showMacros" };
+
+END_BLOCK
+
+BLOCK PALLET INHERIT CARTPALLET_ { no_var="ROOT.PalletMask.hideMacros"|prefix="pal"|default|xmlmask="pallet.mask.overview"|xmlmaskvar="ROOT.PalletMask.chosenPallet"|category="50_System_and_Technology"|macro="60_TechnologyOptions.640_Palletizing@6401"|enable="ROOT.gRcSelectedRobotData.palletAvailable"|exportcomponent="firstPartOnPalletPos;palletEntryPoint" }
+
+   // Variables
+   VAR
+      numberOfParts : ARRAY [0..2] OF TPalletNrOfParts := (1, 1, 1);
+      distanceOfParts : ARRAY [0..2] OF REAL;
+      palletOrder : TPalletOrder := Pal_order_X_Y_Z;
+      firstPartOnPalletPos : CARTPOS := ();
+      palletEntryPointUsed : BOOL;
+      palletEntryPoint : CARTPOS := ();
+      prePlaceOptions : TPrePostPlace;
+      postPlaceOptions : TPrePostPlace;
+   END_VAR
+
+   // Routines
+   ROUTINE ToPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_) { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE FromPut (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_) { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE ToGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynTargetPos : DYNAMIC_) { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE FromGet (OPTIONAL dyn : DYNAMIC_; OPTIONAL ovl : OVERLAP_; OPTIONAL addDynPostTargetPos : DYNAMIC_) { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE Reset (OPTIONAL CONST newCount : DINT) { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE GetNextTargetPos (pos : CARTPOS) : BOOL { enable="ROOT.PalletMask.showMacros" };
+   ROUTINE GetPrevTargetPos (pos : CARTPOS) : BOOL { enable="ROOT.PalletMask.showMacros" };
+
+END_BLOCK
+
+BLOCK CARTPALLET_ ABSTRACT INHERIT PALLET_ { no_var }
+
+   // Variables
+   VAR
+      palRefSys : MAPTO REFSYS_ { showref|nowarn_unsafe };
+      palletDir : TPalletDirection;
+   END_VAR
+
+   // Routines
+   ROUTINE GetNextTargetPos (pos : CARTPOS) : BOOL;
+   ROUTINE GetPrevTargetPos (pos : CARTPOS) : BOOL;
+
+END_BLOCK
+
+BLOCK GUARD { category="50_System_and_Technology"|macro="60_TechnologyOptions.620_WorkspaceMonitoring@6208"|enable="ROOT.gRcSelectedRobotData.cartAvailable"|hide="d1,a1,b1,d2,a2,b2,nrVectors,vector;SELF.hiddenElements"|xmlmask="XML.mask.guard.info"|xmlmaskvar="ROOT.RcGuard.chosenGuard"|no_var }
+
+   // Variables
+   VAR
+      initialActive : BOOL;
+      active : BOOL NOINIT;
+      d1 : REAL;
+      a1 : REAL;
+      b1 : REAL;
+      d2 : REAL;
+      a2 : REAL;
+      b2 : REAL;
+      nrVectors : DINT READONLY NOINIT;
+      vector : GUARDPOINTS := ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ());
+      expert : BOOL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK AREA { prefix="area"|category="50_System_and_Technology"|hide="distX,distY,distZ,height,radius,moveSmoothly,workingTime_s,smoothnessFactor,enterTimeout_s,useTimeout,allowEnterVar,guardSelection,cartDynMonitoring,jointDynMonitoring,SetBoxSize,SetCylinderSize,SetSphereSize,Activate,Deactivate;SELF.hiddenElements"|macro="60_TechnologyOptions.620_WorkspaceMonitoring@6205"|do_allowed|xmlmask="XML.mask.areas.info"|xmlmaskvar="ROOT.RcAreaHandler.areaInView"|enable="ROOT.gRcSelectedRobotData.cartAvailable" }
+
+   // Variables
+   VAR
+      isInside : BOOL READONLY NOINIT := TRUE;
+      active : BOOL READONLY NOINIT;
+      areaType : AREATYPE READONLY;
+      areaShape : AREASHAPE READONLY := BOX;
+      refSys : MAPTO REFSYS_ CONST { showref };
+      startPos : CARTFRAME READONLY;
+      initialActive : BOOL READONLY;
+      distX : REAL READONLY;
+      distY : REAL READONLY;
+      distZ : REAL READONLY;
+      height : REAL READONLY;
+      radius : REAL READONLY;
+      visibleDimensions : ARRAY [0..2] OF BOOL READONLY PRIVATE;
+      xmlShape : DINT READONLY PRIVATE;
+      activateVar : MAPTO BOOL CONST { showemptyref };
+      stateVar : MAPTO BOOL READONLY { showemptyref|nowarn_unsafe };
+      allowEnterVar : MAPTO BOOL CONST { showemptyref };
+      isDisengageable : BOOL READONLY := TRUE;
+      moveSmoothly : ARRAY [0..15] OF BOOL READONLY;
+      workingTime_s : ARRAY [0..15] OF REAL := (3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+      smoothnessFactor : ARRAY [0..15] OF REAL := (15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15);
+      enterTimeout_s : REAL := 600;
+      useTimeout : BOOL;
+      enableChanges : BOOL READONLY NOINIT := TRUE;
+      guardMask : MAPTO GUARDMASK { showemptyref };
+      cartDynMonitoring : CARTDYNMONITORING;
+      jointDynMonitoring : JOINTDYNMONITORING;
+   END_VAR
+
+   // Routines
+   ROUTINE Activate () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE Deactivate () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE Connect (activateFlag : BOOL) { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE Disconnect () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE SetTransformation (pos : CARTFRAME) { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE SetBoxSize (CONST newDistX : REAL; CONST newDistY : REAL; CONST newDistZ : REAL) { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE SetCylinderSize (CONST newRadius : REAL; CONST newHeight : REAL) { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE SetSphereSize (CONST newRadius : REAL) { enable="ROOT.RcAreaHandler.showMacrosDbg" };
+   ROUTINE IsPosInArea (pos : POSITION_) : BOOL { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE WaitRobInside () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE AllowEnter () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE ActivateSmoothMove (CONST enable : BOOL) : BOOL { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE StartLockTimeCountdown () { enable="ROOT.RcAreaHandler.showMacros" };
+   ROUTINE GetRobInsideCnt () : DINT { enable="ROOT.RcAreaHandler.showMacrosDbg" };
+   ROUTINE ResetRobInsideCnt () { enable="ROOT.RcAreaHandler.showMacrosDbg" };
+   ROUTINE RequestOwnership () : BOOL { enable="ROOT.RcAreaHandler.showMacrosDbg" };
+
+END_BLOCK
+
+BLOCK JOINTSPACE { no_var="ROOT.RcJointSpaceHandler.disableAdd"|prefix="jointspace"|category="50_System_and_Technology"|hide="Activate,Deactivate;SELF.hiddenElements"|enable="ROOT.RcJointSpaceHandler.enableJointSpaces"|macro="60_TechnologyOptions.620_WorkspaceMonitoring@6202"|do_allowed }
+
+   // Variables
+   VAR
+      isInside : BOOL READONLY NOINIT := TRUE;
+      active : BOOL READONLY NOINIT;
+      areaType : AREATYPE;
+      lowerLimits : AXISPOS { hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;ROOT.RcData.hiddenElements.axes" };
+      upperLimits : AXISPOS { hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;ROOT.RcData.hiddenElements.axes" };
+      considerJoint : ARRAY [1..16] OF BOOL { hide="[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16];ROOT.RcData.hiddenElements.axes" };
+      initialActive : BOOL;
+      activateArea : BOOL NOINIT;
+      deactivateArea : BOOL NOINIT;
+      activateVar : MAPTO BOOL CONST { showemptyref };
+      stateVar : MAPTO BOOL READONLY { showemptyref|nowarn_unsafe };
+      isDisengageable : BOOL := TRUE;
+      isReadOnly : BOOL;
+   END_VAR
+
+   // Routines
+   ROUTINE Activate () { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE Deactivate () { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE IsPosInArea (pos : POSITION_) : BOOL { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE Connect (activateFlag : BOOL) { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE Disconnect () { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE WaitRobInside () { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE SetMinPosition (pos : AXISPOS) { enable="ROOT.RcJointSpaceHandler.showMacros" };
+   ROUTINE SetMaxPosition (pos : AXISPOS) { enable="ROOT.RcJointSpaceHandler.showMacros" };
+
+END_BLOCK
+
+BLOCK TRACKOBJECT { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="obj"|category="50_System_and_Technology"|macro="60_TechnologyOptions.630_Tracking@6302"|reuse|exportcomponent="refSys"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      isActive : BOOL READONLY NOINIT;
+      id : DINT READONLY NOINIT { hide="TRUE" };
+      userId : DINT READONLY NOINIT;
+      refSys : CARTREFSYS1DVAR READONLY := ();
+      attribute : DINT NOINIT;
+      counter : DINT NOINIT;
+      isProcessable : BOOL READONLY NOINIT;
+      isReachable : BOOL READONLY NOINIT;
+      isSynchronised : BOOL READONLY NOINIT;
+      isInRestrictedArea : BOOL READONLY NOINIT;
+      hasLeftArea : BOOL READONLY NOINIT;
+      workDistance : MAPTO LREAL CONST NOINIT;
+      objectPosition : CARTFRAMEREF READONLY NOINIT;
+   END_VAR
+
+   // Routines
+   ROUTINE ApplyTrackPos (CONST pos : CARTPOS; CONST tool : TOOL_; OPTIONAL CONST rs : CARTREFSYS) : BOOL { enable="ROOT.gRcSelectedRobotData.workingRangeAvailable" };
+   ROUTINE SetSyncJobParam (CONST param : REAL);
+   ROUTINE ReadUserData (outData : ANY) : BOOL;
+   ROUTINE WriteUserData (inData : ANY) : BOOL;
+
+END_BLOCK
+
+BLOCK CONVEYOR_ ABSTRACT { no_var|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      isActive : BOOL READONLY NOINIT;
+      interface : MAPTO CONVITF NOINIT { hide="TRUE" };
+      refSys : MAPTO REFSYS_ { showref };
+      avgWorkAreaReserve : MAPTO LREAL CONST NOINIT;
+      waitingObjects : MAPTO DINT CONST NOINIT;
+      activeObjects : MAPTO DINT CONST NOINIT;
+      itfActive : MAPTO BOOL CONST NOINIT;
+      dataComplete : BOOL PRIVATE;
+   END_VAR
+
+   // Routines
+   ROUTINE End ();
+   ROUTINE Begin ();
+
+END_BLOCK
+
+BLOCK CONVITF { no_var|category="50_System_and_Technology" }
+
+END_BLOCK
+
+BLOCK CONVEYOR INHERIT CONVEYOR_ { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="conv"|category="50_System_and_Technology"|macro="60_TechnologyOptions.630_Tracking@6301"|xmlmask="XML.mask.trackingConfig"|xmlmaskvar="ROOT.TrackingMask.mtConveyor"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      minAcceptArea : LREAL;
+      minWorkArea : LREAL;
+      maxAcceptArea : LREAL;
+      maxWorkArea : LREAL;
+      conveyorResolution : LREAL := 1 { hide="TRUE" };
+      minLimit : CONVTRACKLIMIT := () { hide="TRUE" };
+      maxLimit : CONVTRACKLIMIT := () { hide="TRUE" };
+      workingArea : CONVAREADATA NOINIT := () { hide="TRUE" };
+      reduceDynamic : BOOL { hide="TRUE" };
+      smoothnessFactor : REAL := 6 { hide="TRUE" };
+      minProcessDistance : LREAL READONLY NOINIT;
+      workingRangeReserve : LREAL READONLY NOINIT;
+      workingRangeType : WORKINGRANGELIMIT;
+   END_VAR
+
+   // Routines
+   ROUTINE End ();
+   ROUTINE SetMinProcessDistance (CONST distance : REAL) { enable="ROOT.gRcSelectedRobotData.workingRangeAvailable" };
+   ROUTINE SetWorkingRangeReserve (CONST reserve : REAL) { enable="ROOT.gRcSelectedRobotData.workingRangeAvailable" };
+   ROUTINE SetConvBeltOriTolerance (CONST rectifyOriTolerance : REAL) { enable="ROOT.gRcSelectedRobotData.allowRectifyOri" };
+   ROUTINE ResetStatistic () { do_allowed|color="peripherie"|enable="ROOT.gRcDebugMode" };
+   ROUTINE TestWorkingRange (OPTIONAL CONST pos1 : CARTPOS; OPTIONAL CONST pos2 : CARTPOS; OPTIONAL CONST yMin : REAL; OPTIONAL CONST yMax : REAL; OPTIONAL CONST tool : TOOL_; OPTIONAL CONST object : CARTFRAME; OPTIONAL CONST testMovement : BOOL) { enable="ROOT.TrackingDefinitions.workingRangeDebugMode" };
+   ROUTINE Done (object : TRACKOBJECT; OPTIONAL CONST state : BOOL; OPTIONAL CONST attribute : DINT) { do_allowed };
+   ROUTINE Return (object : TRACKOBJECT; OPTIONAL CONST attribute : DINT) { do_allowed };
+   ROUTINE Wait (object : TRACKOBJECT; OPTIONAL CONST attribute : DINT; OPTIONAL CONST maxWaitDistance : REAL; OPTIONAL CONST timeoutMs : DINT; OPTIONAL CONST abort : BOOL) : WAITRESULT;
+   ROUTINE WaitExt (object : TRACKOBJECT; CONST tool : TOOL_; CONST pos : CARTPOS; OPTIONAL CONST attribute : DINT; OPTIONAL CONST maxWaitDistance : REAL; OPTIONAL CONST timeoutMs : DINT; OPTIONAL CONST refSysOnObject : CARTREFSYS; OPTIONAL CONST abort : BOOL) : WAITRESULT;
+   ROUTINE WaitReachable (object : TRACKOBJECT; OPTIONAL CONST maxWaitDistance : REAL; OPTIONAL CONST timeoutMs : DINT) : WAITRESULT;
+
+END_BLOCK
+
+BLOCK SYNC { no_var="ROOT.MacroKinematic.hide_Sync"|prefix="sync"|category="50_System_and_Technology"|macro="40_Flowcontrol@4021"|enable="ROOT.MacroKinematic.enable_Sync"|defaultScope="system"|color="peripherie" }
+
+   // Routines
+   ROUTINE Sync (VAR_IN syncNr : DINT) { color="peripherie" };
+
+END_BLOCK
+
+BLOCK CLOCK { no_var="ROOT.MacroSystem.hide_Clock"|prefix="clk"|category="50_System_and_Technology"|macro="30_Systemfunctions.310_TimeMeasurement@3101"|enable="ROOT.MacroSystem.enable_Clock"|do_allowed|color="peripherie" }
+
+   // Variables
+   VAR
+      timeMs : DINT;
+   END_VAR
+
+   // Routines
+   ROUTINE Reset () { color="peripherie" };
+   ROUTINE Start () { color="peripherie" };
+   ROUTINE Stop () { color="peripherie"|nowarn_hidden };
+   ROUTINE Read () : DINT { color="peripherie" };
+   ROUTINE ToString () : STRING { color="peripherie" };
+
+END_BLOCK
+
+BLOCK TIMER { no_var="ROOT.MacroSystem.hide_Timer"|prefix="tm"|category="50_System_and_Technology"|macro="30_Systemfunctions.310_TimeMeasurement@3102"|enable="ROOT.MacroSystem.enable_Timer"|do_allowed|color="peripherie"|exportcomponent="q" }
+
+   // Variables
+   VAR
+      q : BOOL;
+   END_VAR
+
+   // Routines
+   ROUTINE Start (CONST timeMs : DINT) { color="peripherie" };
+   ROUTINE Stop () : DINT { color="peripherie"|nowarn_hidden };
+
+END_BLOCK
+
+BLOCK AXISPOS INHERIT AXISPOS_ { no_var="ROOT.MacroKinematic.hide_AxisPos"|prefix="ap"|category="10_Positions"|hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      a1 : REAL;
+      a2 : REAL;
+      a3 : REAL;
+      a4 : REAL;
+      a5 : REAL;
+      a6 : REAL;
+      a7 : REAL;
+      a8 : REAL;
+      aux1 : REAL;
+      aux2 : REAL;
+      aux3 : REAL;
+      aux4 : REAL;
+      aux5 : REAL;
+      aux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK AXISDIST INHERIT DISTANCE_ { no_var="ROOT.MacroKinematic.hide_AxisDist"|prefix="ad"|category="10_Positions"|hide="da1,da2,da3,da4,da5,da6,da7,da8,daux1,daux2,daux3,daux4,daux5,daux6;ROOT.RcData.hiddenElements.axes" }
+
+   // Variables
+   VAR
+      da1 : REAL;
+      da2 : REAL;
+      da3 : REAL;
+      da4 : REAL;
+      da5 : REAL;
+      da6 : REAL;
+      da7 : REAL;
+      da8 : REAL;
+      daux1 : REAL;
+      daux2 : REAL;
+      daux3 : REAL;
+      daux4 : REAL;
+      daux5 : REAL;
+      daux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTDIST INHERIT DISTANCE_ { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="cd"|category="10_Positions"|default|hide="dx,dy,dz,da,db,dc,dummy,dp1,dp2,daux1,daux2,daux3,daux4,daux5,daux6,dp1Type,dp2Type;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable" }
+
+   // Variables
+   VAR
+      dx : REAL;
+      dy : REAL;
+      dz : REAL;
+      da : REAL;
+      db : REAL;
+      dc : REAL;
+      dp1 : REAL;
+      dp2 : REAL { nowarn_unref };
+      dp1Type : POSTYPE;
+      dp2Type : POSTYPE { nowarn_unref };
+      daux1 : REAL;
+      daux2 : REAL;
+      daux3 : REAL;
+      daux4 : REAL;
+      daux5 : REAL;
+      daux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK POLARPOS INHERIT POSITION_ { no_var="ROOT.gRcSelectedRobotData.noShowGeneralizedCoord"|prefix="polarpos"|category="10_Positions"|hide="r,phi,z,w,v,mode,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.showGeneralizedCoord"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      r : REAL;
+      phi : REAL;
+      z : REAL;
+      w : REAL;
+      v : REAL;
+      mode : DINT := -1;
+      aux1 : REAL;
+      aux2 : REAL;
+      aux3 : REAL;
+      aux4 : REAL;
+      aux5 : REAL;
+      aux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTPOSTURN0 INHERIT CARTPOS { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="cpturn0"|category="10_Positions"|hide="x,y,z,a,b,c,p1,p2,mode,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+END_BLOCK
+
+BLOCK AXISPOSIEC INHERIT AXISPOS_ { no_var|category="10_Positions"|hide="a1,a2,a3,a4,a5,a6,a7,a8,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      a1 : MAPTO LREAL;
+      a2 : MAPTO LREAL;
+      a3 : MAPTO LREAL;
+      a4 : MAPTO LREAL;
+      a5 : MAPTO LREAL;
+      a6 : MAPTO LREAL;
+      a7 : MAPTO LREAL;
+      a8 : MAPTO LREAL;
+      aux1 : MAPTO LREAL;
+      aux2 : MAPTO LREAL;
+      aux3 : MAPTO LREAL;
+      aux4 : MAPTO LREAL;
+      aux5 : MAPTO LREAL;
+      aux6 : MAPTO LREAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK ROBAXISPOS INHERIT AXISPOS_ { no_var="ROOT.gRcSelectedRobotData.noExtChainedAvailable"|prefix="rap"|category="10_Positions"|hide="a1,a2,a3,a4,a5,a6,a7,a8;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.extChainedAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      a1 : REAL;
+      a2 : REAL;
+      a3 : REAL;
+      a4 : REAL;
+      a5 : REAL;
+      a6 : REAL;
+      a7 : REAL;
+      a8 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTPOS INHERIT CARTPOS_ { no_var="ROOT.gRcSelectedRobotData.noCartMoveAvailable"|prefix="cp"|category="10_Positions"|default|hide="x,y,z,a,b,c,p1,p2,mode,aux1,aux2,aux3,aux4,aux5,aux6,p1Type,p2Type;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      x : REAL;
+      y : REAL;
+      z : REAL;
+      a : REAL;
+      b : REAL;
+      c : REAL;
+      p1 : REAL;
+      p2 : REAL;
+      p1Type : POSTYPE;
+      p2Type : POSTYPE;
+      mode : DINT := -1;
+      aux1 : REAL;
+      aux2 : REAL;
+      aux3 : REAL;
+      aux4 : REAL;
+      aux5 : REAL;
+      aux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK AUXAXISPOS INHERIT AXISPOS_ { no_var="ROOT.gRcSelectedRobotData.noExtChainedAvailable"|prefix="aap"|category="10_Positions"|hide="dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8,aux1,aux2,aux3,aux4,aux5,aux6;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.extChainedAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      aux1 : REAL;
+      aux2 : REAL;
+      aux3 : REAL;
+      aux4 : REAL;
+      aux5 : REAL;
+      aux6 : REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK ROBCARTPOS INHERIT CARTPOS_ { no_var="ROOT.gRcSelectedRobotData.noCartExtChainedAvailable"|prefix="rcp"|category="10_Positions"|hide="x,y,z,a,b,c,p1,p2,mode,dummy,dummy,dummy,dummy,dummy,dummy,p1Type,p2Type;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartExtChainedAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      x : REAL;
+      y : REAL;
+      z : REAL;
+      a : REAL;
+      b : REAL;
+      c : REAL;
+      p1 : REAL;
+      p2 : REAL;
+      p1Type : POSTYPE;
+      p2Type : POSTYPE;
+      mode : DINT := -1;
+   END_VAR
+
+END_BLOCK
+
+BLOCK CARTPOSIEC INHERIT CARTPOS_ { no_var|category="10_Positions"|hide="x,y,z,a,b,c,p1,p2,mode,aux1,aux2,aux3,aux4,aux5,aux6,p1Type,p2Type;SELF.GetHiddenElems()"|enable="ROOT.gRcSelectedRobotData.cartMoveAvailable"|xmlmask="XML.mask.posControl"|xmlmaskvar="ROOT.PositionMask.chosenPos" }
+
+   // Variables
+   VAR
+      x : MAPTO LREAL;
+      y : MAPTO LREAL;
+      z : MAPTO LREAL;
+      a : MAPTO LREAL;
+      b : MAPTO LREAL;
+      c : MAPTO LREAL;
+      p1 : MAPTO LREAL;
+      p2 : MAPTO LREAL;
+      p1Type : MAPTO POSTYPE;
+      p2Type : MAPTO POSTYPE;
+      mode : MAPTO DINT;
+      aux1 : MAPTO LREAL;
+      aux2 : MAPTO LREAL;
+      aux3 : MAPTO LREAL;
+      aux4 : MAPTO LREAL;
+      aux5 : MAPTO LREAL;
+      aux6 : MAPTO LREAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK DYNAMICIEC INHERIT DYNAMIC_ { no_var|category="20_Dynamics_and_Overlaps"|hide="vel,acc,dec,jerk,velOri,accOri,decOri,jerkOri;SELF.GetHiddenElems()" }
+
+   // Variables
+   VAR
+      velAxis : MAPTO PERCENT;
+      accAxis : MAPTO PERCENT;
+      decAxis : MAPTO PERCENT;
+      jerkAxis : MAPTO PERCENT;
+      vel : MAPTO REAL;
+      acc : MAPTO REAL;
+      dec : MAPTO REAL;
+      jerk : MAPTO REAL;
+      velOri : MAPTO REAL;
+      accOri : MAPTO REAL;
+      decOri : MAPTO REAL;
+      jerkOri : MAPTO REAL;
+   END_VAR
+
+END_BLOCK
+
+BLOCK DYNAMIC INHERIT DYNAMIC_ { no_var="ROOT.MacroKinematic.hide_Dynamic"|prefix="d"|category="20_Dynamics_and_Overlaps"|default|reuse|hide="vel,acc,dec,jerk,velOri,accOri,decOri,jerkOri;SELF.GetHiddenElems()" }
+
+   // Variables
+   VAR
+      velAxis : PERCENT;
+      accAxis : PERCENT;
+      decAxis : PERCENT;
+      jerkAxis : PERCENT;
+      vel : REAL;
+      acc : REAL;
+      dec : REAL;
+      jerk : REAL;
+      velOri : REAL;
+      accOri : REAL;
+      decOri : REAL;
+      jerkOri : REAL;
+   END_VAR
+
+END_BLOCK
+
+PROGRAM ServiceFunctionController
+
+END_PROGRAM
+
+PROGRAM _RcDefinitions
+
+END_PROGRAM
+
+PROGRAM MacroDecrement
+
+END_PROGRAM
+
+PROGRAM MacroSetIMM
+
+END_PROGRAM
+
+PROGRAM RefSysMask
+
+END_PROGRAM
+
+PROGRAM MacroPulseBool
+
+END_PROGRAM
+
+PROGRAM RcWorkpiece
+
+END_PROGRAM
+
+PROGRAM XMLControlEuromap
+
+END_PROGRAM
+
+PROGRAM MacroIncrement
+
+END_PROGRAM
+
+PROGRAM MacroWaitIMM
+
+END_PROGRAM
+
+PROGRAM TeachToolMask
+
+END_PROGRAM
+
+PROGRAM MacroSetBool
+
+END_PROGRAM
+
+PROGRAM JointPalletMask
+
+END_PROGRAM
+
+PROGRAM PalletMask
+
+END_PROGRAM
+
+PROGRAM SimplePalletMask
+
+END_PROGRAM
+
+PROGRAM RcGuard
+
+END_PROGRAM
+
+PROGRAM MacroWait
+
+END_PROGRAM
+
+PROGRAM MacroGetIMM
+
+END_PROGRAM
+
+PROGRAM RcAreaHandler
+
+   // Variables
+   VAR
+      areaInView : MAPTO AREA READONLY NOINIT { showref };
+   END_VAR
+
+END_PROGRAM
+
+PROGRAM RcJointSpaceHandler
+
+END_PROGRAM
+
+PROGRAM MacroDynamicAxis
+
+END_PROGRAM
+
+PROGRAM MacroResetPallet
+
+END_PROGRAM
+
+PROGRAM TrackingMask
+
+END_PROGRAM
+
+PROGRAM TrSetupMask
+
+END_PROGRAM
+
+PROGRAM RcIdentifyRobot
+
+END_PROGRAM
+
+PROGRAM Splines
+
+   // Variables
+   VAR
+      OnParameter : MAPTO ROUTINE (CONST pos : PERCENT; OPTIONAL CONST time : DINT) CONST { enable="ROOT.RcData.enableSpline"|color="trigger"|nowarn_hidden };
+      OnDistance : MAPTO ROUTINE (CONST type : DISTANCETYPE; CONST dist : REAL; OPTIONAL CONST time : DINT) CONST { enable="ROOT.RcData.enableSpline"|color="trigger"|nowarn_hidden };
+      OnPlane : MAPTO ROUTINE (CONST plane : PLANETYPE; CONST pos : REAL; OPTIONAL CONST time : DINT) CONST { enable="ROOT.RcData.enableSpline"|color="trigger"|teachmember="pos"|nowarn_hidden };
+      SplineType : MAPTO ROUTINE (CONST type : SPLINETYPE) CONST { enable="ROOT.RcData.enableSpline"|nowarn_hidden };
+   END_VAR
+
+   // Routines
+   ROUTINE Spline (splinePos : POSITION_; OPTIONAL startTangentPos : POSITION_; OPTIONAL endTangentPos : POSITION_; OPTIONAL type : SPLINETYPE);
+
+END_PROGRAM
+
+PROGRAM JogHandWheel
+
+END_PROGRAM
+
+PROGRAM RcSingleSpotCalibration
+
+END_PROGRAM
+
+PROGRAM PositionMask
+
+   // Variables
+   VAR
+      jogToCartPos : CARTPOS { hide="ROOT.gRcSelectedRobotData.noCartMoveAvailable" };
+      jogToAxisPos : AXISPOS;
+   END_VAR
+
+END_PROGRAM
+
+PROGRAM MacroIMMCommand
+
+END_PROGRAM
+
+PROGRAM MacroService
+
+END_PROGRAM

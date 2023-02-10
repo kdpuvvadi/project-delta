@@ -1,0 +1,11 @@
+cpPrePick : CARTPOS := (z:=-80, a:=90)
+cpPostPick : CARTPOS := (x:=-1.3457e-05, y:=5.25999e-06, z:=100, a:=-180, b:=180)
+cpPick : CARTPOS := (z:=-31, a:=90)
+cpPostpick : CARTPOS := (z:=-75, a:=90)
+dynPick : DYNAMIC := (velAxis:=100, accAxis:=100, decAxis:=100, jerkAxis:=100, vel:=15000, acc:=22000,
+dec:=22000, jerk:=6.5e+06, velOri:=1000, accOri:=3000, decOri:=2000, jerkOri:=3e+06)
+ap0 : AXISPOS := ()
+ap1 : AXISPOS := (a1:=5.13238, a2:=34.7167, a3:=-29.3714, a4:=0.00271654)
+or0 : OVLREL := (ovl:=0)
+or100 : OVLREL := (ovl:=150)
+or200 : OVLREL := (ovl:=200)

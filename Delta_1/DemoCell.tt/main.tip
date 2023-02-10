@@ -1,0 +1,19 @@
+// KAIROVersion 2.20
+CALL StartConv2()
+//IEC.gbCamera_active := FALSE
+Dyn(GlobeDyn)
+OriMode(WRISTJOINT) //rotate wrist axis with axis dyn limits
+Ovl(or0) // set Overlapping type (supperposition)
+RefSys(World)
+//PTP(apHome)
+//WaitTime(200)
+//IEC.gbCamera_active := TRUE
+WaitIsFinished()
+iPickPark := 0
+WAIT IEC.gbCamConnected
+WHILE TRUE DO
+   CALL pick() //Pick Obj From Conv
+   CALL place() //Place Obj From Conv
+   //CALL pick1()
+   //CALL place1()
+END_WHILE

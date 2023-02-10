@@ -1,0 +1,13 @@
+// KAIROVersion 2.20
+IF iPlaceX = 0 THEN
+   cpturn0Place.x := cpturn0Place.x+iXdata0
+   cpturn0PlaceUp.x := cpturn0PlaceUp.x+iXdata0
+ELSIF iPlaceX = 1 THEN
+   cpturn0Place.x := cpturn0Place.x+iXdata1
+   cpturn0PlaceUp.x := cpturn0PlaceUp.x+iXdata1
+ELSIF iPlaceX = 2 THEN
+   cpturn0Place.x := cpturn0Place.x+iXdata2
+   cpturn0PlaceUp.x := cpturn0PlaceUp.x+iXdata2
+END_IF
+WaitIsFinished()
+WaitTime(5)

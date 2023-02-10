@@ -1,0 +1,42 @@
+// KAIROVersion 2.20
+RefSys(World)
+Tool(DefaultTool)
+Dyn(dynFast)
+Ovl(or0)
+IF (place_count MOD 2 =0) THEN
+   Tool(DefaultTool)
+   Lin(cp0, dynFast)
+   Lin(cp_to_drop, dynFast)
+   bSigOut0_robo_ready_to_place.Set(TRUE)
+   WaitBool(IO.di_DM13, TRUE)
+   Lin(cp_drop_down, dynFast)
+   WaitIsFinished()
+   bSigOut_Vacuum_1.Set(FALSE)
+   bSigOut_Vacuum_2.Set(FALSE)
+   Lin(cp_to_drop, dynFast)
+   WaitIsFinished()
+   bSigOut0_robo_ready_to_place.Set(FALSE)
+   bSignOut_Robo_1_PlaceDone.Pulse(800, TRUE)
+   Lin(cp0, dynFast)
+   place_count := place_count + 1
+   GOTO Q1
+END_IF
+IF (place_count MOD 2 <> 0) THEN
+   Tool(DefaultTool)
+   Lin(cp0, dynFast)
+   Lin(cp_drop_two, dynFast)
+   bSigOut0_robo_ready_to_place.Set(TRUE)
+   WaitBool(IO.di_DM13, TRUE)
+   Lin(cp_drop_down2, dynFast)
+   WaitIsFinished()
+   bSigOut_Vacuum_1.Set(FALSE)
+   bSigOut_Vacuum_2.Set(FALSE)
+   Lin(cp_drop_two, dynFast)
+   WaitIsFinished()
+   bSigOut0_robo_ready_to_place.Set(FALSE)
+   bSignOut_Robo_1_PlaceDone.Pulse(800, TRUE)
+   Lin(cp0, dynFast)
+   place_count := place_count + 1
+   GOTO Q1
+END_IF
+LABEL Q1

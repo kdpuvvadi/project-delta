@@ -1,0 +1,8 @@
+cpWaitPlace : CARTPOS := (x:=81.2705, y:=196.774, z:=674.629, a:=-90.0115, mode:=0)
+i0 : DINT := 0
+cp0 : CARTPOS := (x := -100, y := 0.0320577, z := 690.151, a := -0.0184631, mode := 0)
+cp1 : CARTPOS := (x := -62, y := 367, z := 690, a := -0.0187073, mode := 0)
+cp2 : CARTPOS := (x := -62, y := 367, z := 725, a := -0.0186768, mode := 0)
+cp_to_drop : CARTPOS := (x := -62, y := 403, z := 680)
+cp_drop_down : CARTPOS := (x := -62, y := 403, z := 725)
+cp_home : CARTPOS := (z := 666)

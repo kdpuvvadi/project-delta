@@ -1,0 +1,146 @@
+GLOBAL
+
+   // Variables
+   VAR
+      RobotBase : REFSYSSTATIC CONST NOINIT { hide="PROGRAM.baseNotAvailable" };
+      RobotData : ROBOTDATA CONST NOINIT { hide="PROGRAM.robNotAvailable" };
+   END_VAR
+
+END_GLOBAL
+
+PROGRAM IEC
+
+   // Variables
+   VAR
+      gbConv1Powered : MAPTO BOOL CONST { hide="TRUE" };
+      gbConv2Powered : MAPTO BOOL CONST { hide="TRUE" };
+      gbEnable1 : MAPTO BOOL { hide="TRUE" };
+      gbEnable2 : MAPTO BOOL { hide="TRUE" };
+      gbErrorStop1 : MAPTO BOOL CONST { hide="TRUE" };
+      gbErrorStop2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbHome1 : MAPTO BOOL CONST { hide="TRUE" };
+      gbHome2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbMove1 : MAPTO BOOL { hide="TRUE" };
+      gbMove2 : MAPTO BOOL { hide="TRUE" };
+      gbReset1 : MAPTO BOOL { hide="TRUE" };
+      gbReset2 : MAPTO BOOL { hide="TRUE" };
+      bfb : MAPTO LREAL { hide="TRUE" };
+      bPlaceNumAdd1 : MAPTO BOOL { hide="TRUE" };
+      FenPei : MAPTO LREAL { hide="TRUE" };
+      fuyajc1 : MAPTO BOOL CONST { hide="TRUE" };
+      fuyajc2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbAutoStop : MAPTO BOOL { hide="TRUE" };
+      gbCamConnected : MAPTO BOOL { hide="TRUE" };
+      gbCamConnected_1 : MAPTO BOOL CONST { hide="TRUE" };
+      gbCamera_active : MAPTO BOOL { hide="TRUE" };
+      gbCamera_active_1 : MAPTO BOOL { hide="TRUE" };
+      gbClearBuffer : MAPTO BOOL { hide="TRUE" };
+      gbDelta3Conv1Pluse : MAPTO BOOL { hide="TRUE" };
+      gbDelta3Conv2Pluse : MAPTO BOOL { hide="TRUE" };
+      gbDelta3Sersor_Switch : MAPTO BOOL { hide="TRUE" };
+      gbDelta3StopConv1 : MAPTO BOOL { hide="TRUE" };
+      gbDelta3StopConv2 : MAPTO BOOL { hide="TRUE" };
+      gbfrequency : MAPTO DINT { hide="TRUE" };
+      gbGetList : MAPTO BOOL CONST { hide="TRUE" };
+      gbGetSafePos : MAPTO BOOL CONST { hide="TRUE" };
+      gbGetSafePos2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbInitFinish : MAPTO BOOL CONST { hide="TRUE" };
+      gbInitFinish2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbPlaceBeltPulseR1 : MAPTO BOOL { hide="TRUE" };
+      gbPlaceBeltPulseR2 : MAPTO BOOL { hide="TRUE" };
+      gbRemovePlaceR1 : MAPTO BOOL { hide="TRUE" };
+      geshu : MAPTO DINT { hide="TRUE" };
+      geshu2 : MAPTO DINT { hide="TRUE" };
+      grObjectSize : MAPTO LREAL { hide="TRUE" };
+      grObjectSize_1 : MAPTO LREAL { hide="TRUE" };
+      gtsSafePos : MAPTO CARTPOSIEC CONST { hide="TRUE" };
+      gtsSafePos2 : MAPTO CARTPOSIEC CONST { hide="TRUE" };
+      HMI_bCleanDayNum : MAPTO BOOL CONST { hide="TRUE" };
+      HMI_bCleanTotalNum : MAPTO BOOL CONST { hide="TRUE" };
+      HMI_CurDayProduct : MAPTO REAL CONST { hide="TRUE" };
+      HMI_CurTotalProduct : MAPTO REAL CONST { hide="TRUE" };
+      HMI_SafePosHigh : MAPTO REAL { hide="TRUE" };
+      jcsj : MAPTO BOOL CONST { hide="TRUE" };
+      r1maduofa : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduofx : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduofy : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduofz : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduogx : MAPTO REAL CONST { hide="TRUE" };
+      r1maduogy : MAPTO REAL CONST { hide="TRUE" };
+      r1maduogz : MAPTO REAL CONST { hide="TRUE" };
+      r1maduopx : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduopy : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduopz : MAPTO LREAL CONST { hide="TRUE" };
+      r1maduoup : MAPTO LREAL CONST { hide="TRUE" };
+      r1picka : MAPTO LREAL CONST { hide="TRUE" };
+      r1pickdow : MAPTO LREAL CONST { hide="TRUE" };
+      r1pickup : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduofa : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduofx : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduofy : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduofz : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduogx : MAPTO REAL CONST { hide="TRUE" };
+      r2maduogy : MAPTO REAL CONST { hide="TRUE" };
+      r2maduogz : MAPTO REAL CONST { hide="TRUE" };
+      r2maduopx : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduopy : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduopz : MAPTO LREAL CONST { hide="TRUE" };
+      r2maduoup : MAPTO LREAL CONST { hide="TRUE" };
+      r2picka : MAPTO LREAL CONST { hide="TRUE" };
+      r2pickdow : MAPTO LREAL CONST { hide="TRUE" };
+      r2pickup : MAPTO LREAL CONST { hide="TRUE" };
+      tiaoshimoshi : MAPTO BOOL CONST { hide="TRUE" };
+      bb1 : MAPTO BOOL CONST { hide="TRUE" };
+      bb2 : MAPTO BOOL CONST { hide="TRUE" };
+      gbAllRobotsPowered : MAPTO BOOL CONST { hide="TRUE" };
+      gbExternMode_Switch : MAPTO BOOL { hide="TRUE" };
+      gbStartRobots : MAPTO BOOL CONST { hide="TRUE" };
+      gbStopRobots : MAPTO BOOL CONST { hide="TRUE" };
+      giPermission : MAPTO INT { hide="TRUE" };
+      grObjectSize2 : MAPTO LREAL { hide="TRUE" };
+      grOverride : MAPTO REAL { hide="TRUE" };
+      r12 : MAPTO BOOL { hide="TRUE" };
+   END_VAR
+
+END_PROGRAM
+
+PROGRAM IO
+
+   // Variables
+   VAR
+      di_DM10 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM11 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM12 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM13 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM14 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM15 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM5 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM6 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM7 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM8 : MAPTO BOOL CONST { hide="TRUE" };
+      di_DM9 : MAPTO BOOL CONST { hide="TRUE" };
+      di_EnableSwitch : MAPTO BOOL CONST { hide="TRUE" };
+      di_Estop : MAPTO BOOL CONST { hide="TRUE" };
+      di_ExternEstop : MAPTO BOOL CONST { hide="TRUE" };
+      di_Reset : MAPTO BOOL CONST { hide="TRUE" };
+      di_Running : MAPTO BOOL CONST { hide="TRUE" };
+      do_DM0 : MAPTO BOOL { hide="TRUE" };
+      do_DM1 : MAPTO BOOL { hide="TRUE" };
+      do_DM10 : MAPTO BOOL { hide="TRUE" };
+      do_DM11 : MAPTO BOOL { hide="TRUE" };
+      do_DM12 : MAPTO BOOL { hide="TRUE" };
+      do_DM13 : MAPTO BOOL { hide="TRUE" };
+      do_DM14 : MAPTO BOOL { hide="TRUE" };
+      do_DM15 : MAPTO BOOL { hide="TRUE" };
+      do_DM2 : MAPTO BOOL { hide="TRUE" };
+      do_DM3 : MAPTO BOOL { hide="TRUE" };
+      do_DM8 : MAPTO BOOL { hide="TRUE" };
+      do_DM9 : MAPTO BOOL { hide="TRUE" };
+      do_Error_RedLight : MAPTO BOOL { hide="TRUE" };
+      do_Run_GreenLight : MAPTO BOOL { hide="TRUE" };
+      do_Standby_YellowLight : MAPTO BOOL { hide="TRUE" };
+      do_TakePhoto : MAPTO BOOL { hide="TRUE" };
+      INC0PickConvPos : MAPTO DINT CONST { hide="TRUE" };
+   END_VAR
+
+END_PROGRAM

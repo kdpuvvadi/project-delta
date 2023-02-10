@@ -1,0 +1,11 @@
+GLOBAL
+
+   // Variables
+   VAR
+      RobotBase : REFSYSSTATIC CONST NOINIT USER { hide="PROGRAM.baseNotAvailable" };
+      RobotData : ROBOTDATA CONST NOINIT USER { hide="PROGRAM.robNotAvailable" };
+      gDataDefinitionVersion : DINT CONST;
+      gGlobalPrjIsOperational : BOOL READONLY;
+   END_VAR
+
+END_GLOBAL

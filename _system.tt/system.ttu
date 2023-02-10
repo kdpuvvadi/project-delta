@@ -1,0 +1,151 @@
+GLOBAL
+
+   // Variables
+   VAR
+      os200 : OVLSUPPOS;
+      dynFast : DYNAMIC;
+      orPick : OVLREL;
+   END_VAR
+
+END_GLOBAL
+
+PROGRAM IEC
+
+   // Variables
+   VAR
+      gbConv1Powered : MAPTO BOOL CONST;
+      gbConv2Powered : MAPTO BOOL CONST;
+      gbEnable1 : MAPTO BOOL;
+      gbEnable2 : MAPTO BOOL;
+      gbErrorStop1 : MAPTO BOOL CONST;
+      gbErrorStop2 : MAPTO BOOL CONST;
+      gbHome1 : MAPTO BOOL CONST;
+      gbHome2 : MAPTO BOOL CONST;
+      gbMove1 : MAPTO BOOL;
+      gbMove2 : MAPTO BOOL;
+      gbReset1 : MAPTO BOOL;
+      gbReset2 : MAPTO BOOL;
+      bfb : MAPTO LREAL;
+      bPlaceNumAdd1 : MAPTO BOOL;
+      FenPei : MAPTO LREAL;
+      fuyajc1 : MAPTO BOOL CONST;
+      fuyajc2 : MAPTO BOOL CONST;
+      gbAutoStop : MAPTO BOOL;
+      gbCamConnected : MAPTO BOOL;
+      gbCamConnected_1 : MAPTO BOOL CONST;
+      gbCamera_active : MAPTO BOOL;
+      gbCamera_active_1 : MAPTO BOOL;
+      gbClearBuffer : MAPTO BOOL;
+      gbDelta3Conv1Pluse : MAPTO BOOL;
+      gbDelta3Conv2Pluse : MAPTO BOOL;
+      gbDelta3Sersor_Switch : MAPTO BOOL;
+      gbDelta3StopConv1 : MAPTO BOOL;
+      gbDelta3StopConv2 : MAPTO BOOL;
+      gbfrequency : MAPTO DINT;
+      gbGetList : MAPTO BOOL CONST;
+      gbGetSafePos : MAPTO BOOL CONST;
+      gbGetSafePos2 : MAPTO BOOL CONST;
+      gbInitFinish : MAPTO BOOL CONST;
+      gbInitFinish2 : MAPTO BOOL CONST;
+      gbPlaceBeltPulseR1 : MAPTO BOOL;
+      gbPlaceBeltPulseR2 : MAPTO BOOL;
+      gbRemovePlaceR1 : MAPTO BOOL;
+      geshu : MAPTO DINT;
+      geshu2 : MAPTO DINT;
+      grObjectSize : MAPTO LREAL;
+      grObjectSize_1 : MAPTO LREAL;
+      gtsSafePos : CARTPOSIEC CONST;
+      gtsSafePos2 : CARTPOSIEC CONST;
+      HMI_bCleanDayNum : MAPTO BOOL CONST;
+      HMI_bCleanTotalNum : MAPTO BOOL CONST;
+      HMI_CurDayProduct : MAPTO REAL CONST;
+      HMI_CurTotalProduct : MAPTO REAL CONST;
+      HMI_SafePosHigh : MAPTO REAL;
+      jcsj : MAPTO BOOL CONST;
+      r1maduofa : MAPTO LREAL CONST;
+      r1maduofx : MAPTO LREAL CONST;
+      r1maduofy : MAPTO LREAL CONST;
+      r1maduofz : MAPTO LREAL CONST;
+      r1maduogx : MAPTO REAL CONST;
+      r1maduogy : MAPTO REAL CONST;
+      r1maduogz : MAPTO REAL CONST;
+      r1maduopx : MAPTO LREAL CONST;
+      r1maduopy : MAPTO LREAL CONST;
+      r1maduopz : MAPTO LREAL CONST;
+      r1maduoup : MAPTO LREAL CONST;
+      r1picka : MAPTO LREAL CONST;
+      r1pickdow : MAPTO LREAL CONST;
+      r1pickup : MAPTO LREAL CONST;
+      r2maduofa : MAPTO LREAL CONST;
+      r2maduofx : MAPTO LREAL CONST;
+      r2maduofy : MAPTO LREAL CONST;
+      r2maduofz : MAPTO LREAL CONST;
+      r2maduogx : MAPTO REAL CONST;
+      r2maduogy : MAPTO REAL CONST;
+      r2maduogz : MAPTO REAL CONST;
+      r2maduopx : MAPTO LREAL CONST;
+      r2maduopy : MAPTO LREAL CONST;
+      r2maduopz : MAPTO LREAL CONST;
+      r2maduoup : MAPTO LREAL CONST;
+      r2picka : MAPTO LREAL CONST;
+      r2pickdow : MAPTO LREAL CONST;
+      r2pickup : MAPTO LREAL CONST;
+      tiaoshimoshi : MAPTO BOOL CONST;
+      bb1 : MAPTO BOOL CONST;
+      bb2 : MAPTO BOOL CONST;
+      gbAllRobotsPowered : MAPTO BOOL CONST;
+      gbExternMode_Switch : MAPTO BOOL;
+      gbStartRobots : MAPTO BOOL CONST;
+      gbStopRobots : MAPTO BOOL CONST;
+      giPermission : MAPTO INT;
+      grObjectSize2 : MAPTO LREAL;
+      grOverride : MAPTO REAL;
+      r12 : MAPTO BOOL;
+   END_VAR
+
+END_PROGRAM
+
+PROGRAM IO
+
+   // Variables
+   VAR
+      di_DM10 : MAPTO BOOL CONST;
+      di_DM11 : MAPTO BOOL CONST;
+      di_DM12 : MAPTO BOOL CONST;
+      di_DM13 : MAPTO BOOL CONST;
+      di_DM14 : MAPTO BOOL CONST;
+      di_DM15 : MAPTO BOOL CONST;
+      di_DM5 : MAPTO BOOL CONST;
+      di_DM6 : MAPTO BOOL CONST;
+      di_DM7 : MAPTO BOOL CONST;
+      di_DM8 : MAPTO BOOL CONST;
+      di_DM9 : MAPTO BOOL CONST;
+      di_EnableSwitch : MAPTO BOOL CONST;
+      di_Estop : MAPTO BOOL CONST;
+      di_ExternEstop : MAPTO BOOL CONST;
+      di_Reset : MAPTO BOOL CONST;
+      di_Running : MAPTO BOOL CONST;
+      do_DM0 : MAPTO BOOL;
+      do_DM1 : MAPTO BOOL;
+      do_DM10 : MAPTO BOOL;
+      do_DM11 : MAPTO BOOL;
+      do_DM12 : MAPTO BOOL;
+      do_DM13 : MAPTO BOOL;
+      do_DM14 : MAPTO BOOL;
+      do_DM15 : MAPTO BOOL;
+      do_DM2 : MAPTO BOOL;
+      do_DM3 : MAPTO BOOL;
+      do_DM8 : MAPTO BOOL;
+      do_DM9 : MAPTO BOOL;
+      do_Error_RedLight : MAPTO BOOL;
+      do_Run_GreenLight : MAPTO BOOL;
+      do_Standby_YellowLight : MAPTO BOOL;
+      do_TakePhoto : MAPTO BOOL;
+      INC0PickConvPos : MAPTO DINT CONST;
+   END_VAR
+
+END_PROGRAM
+
+PROGRAM _globalvars
+
+END_PROGRAM

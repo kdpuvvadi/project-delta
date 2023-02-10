@@ -1,0 +1,16 @@
+crsCamera2 : CARTREFSYS := (baseRefSys := MAP(_base.World), x := -972.238, y := -94.3861, z := 731.045, 
+a := -61.2111, b := 1.5325, c := 61.1622)
+crsPlaceConv : CARTREFSYS := (baseRefSys := MAP(_base.World), x := -0.115287, y := 0.00983997, z := 666.212, 
+a := -136.16, b := 0.0679232, c := 136.162)
+tGripper : TOOL := (z:=20, guard:=(vector := ((active := TRUE, type := BEGINTRANSFORMATION), (),(),(),
+(), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())))
+bEnableConv2 : BOOLSIGOUT := (signal:=MAPX("IEC.VAR.ConvCtrl.gbEnable2"))
+bStartConv2 : BOOLSIGOUT := (signal:=MAPX("IEC.VAR.ConvCtrl.gbMove2"))
+PickConv_1 : CONVEYOR := (refSys := MAP(crsCamera2), dataComplete := TRUE, minWorkArea := 600, maxAcceptArea := 700, 
+maxWorkArea := 750, conveyorResolution := 26.3964920043945, minLimit := (enable := TRUE, syncObeyPathAcce := FALSE), 
+maxLimit := (enable := TRUE, syncObeyPathAcce := FALSE), reduceDynamic := TRUE, smoothnessFactor := 8.775)
+PlaceConv : CONVEYOR := (refSys:=MAP(crsPlaceConv), dataComplete:=TRUE, minAcceptArea:=320, minWorkArea:=336.266967773438,
+maxAcceptArea:=602.313781738281, maxWorkArea:=863.884887695312, conveyorResolution:=40.5, minLimit:=(enable := TRUE,
+syncObeyPathAcce := FALSE), maxLimit:=(enable := TRUE, syncObeyPathAcce := FALSE), smoothnessFactor:=7.47)
+DefaultTool : TOOLSTATIC {hide="Delta_1._globalRobotData.toolNotAvailable"|from_kestudio_device|safety_relevant|nowarn_hidden}
+place_count : DINT := 0

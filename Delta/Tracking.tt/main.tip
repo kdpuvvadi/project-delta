@@ -1,0 +1,21 @@
+// KAIROVersion 2.20
+i0 := 0
+b0 := FALSE
+b1 := FALSE
+maduo1.Reset()
+CALL int()
+bSigOut_Vacuum_1.Set(FALSE)
+bSigOut_Vacuum_2.Set(FALSE)
+ClearBuff.Pulse(100, TRUE)
+bSigOut_aphome.Pulse(500)
+WAIT IEC.gbInitFinish
+Lin(IEC.gtsSafePos)
+WaitTime(200)
+IEC.gbCamera_active := FALSE
+WaitTime(200)
+IEC.gbCamera_active := TRUE
+WAIT IEC.gbCamConnected
+WHILE IEC.gbCamConnected DO
+   CALL pick()
+   CALL place()
+END_WHILE
